@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apps Gravity | Hassan – App & Web Developer</title>
+  <meta name="description" content="Hassan – App Developer, Web Developer & Free Course Distributor. Building cutting-edge apps and websites tailored to your needs." />
+  <meta name="keywords" content="Apps Gravity, Hassan, App Development, Web Development, Pak Advisory, Free Courses, Medical Billing Course, AI Assistant" />
+  <meta property="og:title" content="Apps Gravity | Hassan" />
+  <meta property="og:description" content="App & Web Development crafted for your usage." />
+  <link rel="icon" type="image/jpg" href="logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── CURSOR GLOW ── -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- ── PARTICLES ── -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- ── NAV ── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo" id="navLogo">
+        <img src="logo.jpg" alt="Apps Gravity Logo" class="logo-img" />
+        <span class="logo-text">Apps <span class="gold">Gravity</span></span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+        <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+        <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
+        <li><a href="#portfolio" class="nav-link" data-section="portfolio">Portfolio</a></li>
+        <li><a href="#estimator" class="nav-link" data-section="estimator">Estimator</a></li>
+        <li><a href="#courses" class="nav-link" data-section="courses">Courses</a></li>
+        <li><a href="#reviews" class="nav-link" data-section="reviews">Reviews</a></li>
+        <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+        <li><button class="nav-theme-btn" id="themeToggleBtn" title="Switch AI Visual Theme">🎨 <span id="themeNameLabel">Gold Obsidian</span></button></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero" id="home">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge" data-aos="fade-down">
+        <span class="badge-dot"></span>
+        Available for Projects & Courses • 🤖 AI Assistant Online
+      </div>
+      <h1 class="hero-title" data-aos="fade-up">
+        <span class="line-1">Apps &amp; Knowledge Built for</span>
+        <span class="line-2 gradient-text">Your Universe</span>
+      </h1>
+      <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+        Hey, I'm <strong class="gold">Hassan</strong> — founder of <strong class="gold">Apps Gravity</strong>.<br />
+        I craft apps, websites &amp; distribute free professional courses tailored to your needs.
+      </p>
+      <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
+        <a href="#courses" class="btn btn-primary" id="viewCoursesBtn">
+          <span>Free Courses</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </a>
+        <a href="#portfolio" class="btn btn-outline" id="viewWorkBtn">View Portfolio</a>
+        <button class="btn btn-gold-outline" id="heroChatTriggerBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Ask AI Assistant</span>
+        </button>
+      </div>
+      <div class="hero-stats" data-aos="fade-up" data-aos-delay="600">
+        <div class="stat">
+          <span class="stat-num" data-count="10">0</span><span class="gold">+</span>
+          <span class="stat-label">Projects Done</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-count="4">0</span><span class="gold">+</span>
+          <span class="stat-label">Free Courses</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-count="100">0</span><span class="gold">%</span>
+          <span class="stat-label">Free Knowledge</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual" data-aos="fade-left" data-aos-delay="300">
+      <div class="phone-mockup" id="phoneMockupTrigger">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="app-ui">
+              <div class="app-header">
+                <div class="app-dot red"></div>
+                <div class="app-dot yellow"></div>
+                <div class="app-dot green"></div>
+                <span>Pak Advisory</span>
+              </div>
+              <div class="app-content">
+                <div class="app-card shimmer"></div>
+                <div class="app-row">
+                  <div class="app-block shimmer"></div>
+                  <div class="app-block shimmer"></div>
+                </div>
+                <div class="app-card shimmer sm"></div>
+                <div class="app-card shimmer sm"></div>
+                <div class="app-btn-sim">
+                  <span>Explore Advisory</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-glow"></div>
+        <div class="orbit orbit-1"><div class="orbit-dot"></div></div>
+        <div class="orbit orbit-2"><div class="orbit-dot gold-dot"></div></div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ── -->
+  <section class="about section" id="about">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">About Me</span>
+        <h2 class="section-title">The Mind Behind <span class="gradient-text">Apps Gravity</span></h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-image-wrap" data-aos="fade-right">
+          <div class="about-avatar">
+            <div class="avatar-ring ring-1"></div>
+            <div class="avatar-ring ring-2"></div>
+            <div class="avatar-core">
+              <span class="avatar-letter">H</span>
+            </div>
+          </div>
+          <div class="about-badge-card">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+            <div>
+              <strong>Active</strong>
+              <small>Building & Sharing</small>
+            </div>
+          </div>
+        </div>
+        <div class="about-text" data-aos="fade-left">
+          <p class="about-intro">Hey there! I'm <span class="gold">Hassan</span> — a passionate developer, creator, and course distributor from Pakistan.</p>
+          <p>I founded <span class="gold">Apps Gravity</span> with one mission: to build apps and websites perfectly tailored to how <em>you</em> use them, while distributing premium skill courses for free to empower learners worldwide.</p>
+          <p>Whether it's custom app development or downloading high-demand skills like <span class="gold">Medical Billing</span> — I am here to deliver quality.</p>
+          <div class="about-highlights">
+            <div class="highlight-item">
+              <div class="highlight-icon">📱</div>
+              <div><strong>App Development</strong><p>Native & cross-platform apps</p></div>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-icon">🌐</div>
+              <div><strong>Web Development</strong><p>Modern, responsive websites</p></div>
+            </div>
+            <div class="highlight-item">
+              <div class="highlight-icon">🎓</div>
+              <div><strong>Free Courses</strong><p>Medical Billing & Tech Skills</p></div>
+            </div>
+          </div>
+          <a href="#contact" class="btn btn-primary mt-16" id="letsTalkBtn">Let's Talk</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SKILLS ── -->
+  <section class="skills-section section" id="skills">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Expertise</span>
+        <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="0">
+          <div class="skill-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <h3>App Development</h3>
+          <p>Building mobile applications tailored to your exact workflow, from concept to deployment.</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+          <span class="skill-percent">90%</span>
+        </div>
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="skill-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+          </div>
+          <h3>Web Development</h3>
+          <p>Designing and developing modern, fast, and responsive websites that convert and impress.</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+          <span class="skill-percent">85%</span>
+        </div>
+        <div class="skill-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="skill-icon-wrap">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <h3>Free Course Distribution</h3>
+          <p>Curating and distributing free high-demand skill courses (Medical Billing, IT) to empower learners.</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+          <span class="skill-percent">95%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PORTFOLIO ── -->
+  <section class="portfolio section" id="portfolio">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">My Work</span>
+        <h2 class="section-title">Featured <span class="gradient-text">Projects</span></h2>
+      </div>
+      <div class="portfolio-grid">
+
+        <!-- Project 1 -->
+        <div class="project-card featured" data-aos="fade-up">
+          <div class="project-image">
+            <div class="proj-mockup">
+              <div class="proj-screen">
+                <div class="proj-header-bar">
+                  <span class="proj-dot"></span><span class="proj-dot"></span><span class="proj-dot"></span>
+                  <span class="proj-title-bar">Pak Advisory</span>
+                </div>
+                <div class="proj-body">
+                  <div class="proj-line wide shimmer"></div>
+                  <div class="proj-line med shimmer"></div>
+                  <div class="proj-card-mini shimmer"></div>
+                  <div class="proj-row-mini">
+                    <div class="proj-btn-mini shimmer"></div>
+                    <div class="proj-btn-mini shimmer accent"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="project-overlay">
+              <button class="btn btn-primary sm" id="openPakModalBtn">View Demo & Details</button>
+            </div>
+          </div>
+          <div class="project-info">
+            <div class="project-tags">
+              <span class="tag">Mobile App</span>
+              <span class="tag">Advisory</span>
+              <span class="tag">Pakistan</span>
+            </div>
+            <h3>Pak Advisory App</h3>
+            <p>A comprehensive advisory platform built for Pakistan — providing users with expert guidance, resources, and actionable insights.</p>
+            <div class="project-footer">
+              <span class="project-status live">
+                <span class="live-dot"></span> Featured Project
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card coming-soon" data-aos="fade-up" data-aos-delay="100">
+          <div class="cs-content">
+            <div class="cs-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <h3>More Projects</h3>
+            <p>Currently working on exciting new projects. Check back soon or reach out to collaborate!</p>
+            <a href="#contact" class="btn btn-outline sm" id="collaborateBtn">Collaborate</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 🧮 INTERACTIVE PROJECT ESTIMATOR ── -->
+  <!-- FIX: the chatbot and README both promised an "interactive Project Estimator"
+       and style.css was already fully styled for one (.estimator-card, .radio-cards,
+       .estimator-result-panel, etc.), and the backend's /api/quote route was already
+       built to power it — but the actual section never existed on the page. This is
+       that missing piece, wired to the existing /api/quote endpoint in script.js. -->
+  <section class="estimator-section section" id="estimator">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Instant Quote</span>
+        <h2 class="section-title">Project <span class="gradient-text">Estimator</span></h2>
+        <p class="section-subtitle" style="color: var(--text-muted); margin-top: 0.5rem;">Pick your project type and features for a transparent, instant cost & timeline estimate</p>
+      </div>
+
+      <div class="estimator-card" data-aos="fade-up">
+        <form id="estimatorForm">
+          <div class="estimator-grid">
+            <div class="estimator-inputs">
+
+              <div class="est-group">
+                <label>Project Type</label>
+                <div class="radio-cards" id="projectTypeCards">
+                  <label class="radio-card selected">
+                    <input type="radio" name="projectType" value="web" checked />
+                    <div>
+                      <span class="rc-title">🌐 Web App</span>
+                      <span class="rc-sub">From ~$499 • ~2 weeks</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="projectType" value="mobile" />
+                    <div>
+                      <span class="rc-title">📱 Mobile App</span>
+                      <span class="rc-sub">From ~$799 • ~3 weeks</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="projectType" value="fullstack" />
+                    <div>
+                      <span class="rc-title">🧩 Full-Stack Ecosystem</span>
+                      <span class="rc-sub">From ~$1199 • ~4 weeks</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="est-group">
+                <label>Platform</label>
+                <div class="radio-cards" id="platformCards">
+                  <label class="radio-card selected">
+                    <input type="radio" name="platform" value="cross-platform" checked />
+                    <div>
+                      <span class="rc-title">Cross-Platform</span>
+                      <span class="rc-sub">One codebase, all devices</span>
+                    </div>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="platform" value="ios-android" />
+                    <div>
+                      <span class="rc-title">iOS &amp; Android Native</span>
+                      <span class="rc-sub">Best performance per platform</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="est-group">
+                <label>Add-On Features</label>
+                <div class="checkbox-grid">
+                  <label class="check-item"><input type="checkbox" name="feature" value="auth" /> User Authentication (+$150)</label>
+                  <label class="check-item"><input type="checkbox" name="feature" value="payments" /> Payments Integration (+$200)</label>
+                  <label class="check-item"><input type="checkbox" name="feature" value="ai_chatbot" /> AI Chatbot Assistant (+$250)</label>
+                  <label class="check-item"><input type="checkbox" name="feature" value="admin_panel" /> Admin Panel (+$300)</label>
+                </div>
+              </div>
+
+              <div class="est-group">
+                <label>Your Email (optional — to receive this estimate)</label>
+                <input type="email" id="estimatorEmail" placeholder="your@email.com" style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; background: #090b10; border: 1px solid var(--border-color); color: var(--text-main);" />
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="calculateEstimateBtn">
+                <span>Calculate My Estimate</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+
+            <div class="estimator-result-panel" id="estimatorResultPanel">
+              <span class="result-badge">Estimated Cost</span>
+              <div class="result-price"><span class="currency">$</span><span id="resultPriceValue">499</span></div>
+              <div class="result-time" id="resultTimeValue">~2 weeks turnaround</div>
+              <ul class="result-features-list" id="resultFeaturesList">
+                <li>Select your project type and features, then calculate to see a live breakdown here.</li>
+              </ul>
+              <button type="button" class="btn btn-outline sm full" id="estimatorContactBtn">Discuss This Project</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DYNAMIC COURSES & KNOWLEDGE HUB ── -->
+  <section class="courses-section section" id="courses">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Free Learning</span>
+        <h2 class="section-title">Free <span class="gradient-text">Video Courses Hub</span></h2>
+        <p class="section-subtitle" style="color: var(--text-muted); margin-top: 0.5rem;">Access premium full video courses hosted on Google Drive — 100% Free</p>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="courses-controls" data-aos="fade-up">
+        <div class="search-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="courseSearchInput" placeholder="Search courses (e.g. Medical Billing, Web, Python)..." />
+        </div>
+        <div class="filter-chips">
+          <button class="filter-chip active" data-filter="all">All Courses</button>
+          <button class="filter-chip" data-filter="medical">Medical</button>
+          <button class="filter-chip" data-filter="analytics">Data & BI</button>
+          <button class="filter-chip" data-filter="programming">Programming</button>
+          <button class="filter-chip" data-filter="mobile">Mobile Dev</button>
+        </div>
+      </div>
+
+      <div class="courses-grid" id="coursesGridContainer">
+        <!-- Featured Medical Billing Course Card -->
+        <div class="course-card featured-course" data-aos="fade-up">
+          <div class="course-badge">🔥 Free Full Video Course</div>
+          <div class="course-header">
+            <div class="course-icon-wrap">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="course-title-area">
+              <h3>Medical Billing Complete Video Course</h3>
+              <span class="course-meta">Full Video Lessons • Google Drive Access</span>
+            </div>
+          </div>
+          <p class="course-desc">Comprehensive Medical Billing video course hosted on Google Drive. Covers claim submission, ICD-10 &amp; CPT coding, revenue cycle management (RCM), and practical billing procedures.</p>
+          <div class="course-features">
+            <div class="c-feat">🔒 End-to-End Secure Access</div>
+            <div class="c-feat">📹 Full Video Tutorials</div>
+            <div class="c-feat">📂 Hosted on Google Drive</div>
+            <div class="c-feat">💡 100% Free Access</div>
+          </div>
+          <div class="course-footer" style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link" target="_blank" rel="noopener noreferrer" class="btn btn-primary full" style="justify-content: center; text-decoration: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>▶ Watch Video Course on Google Drive</span>
+            </a>
+            <small class="drive-note">🔒 Verified Direct Google Drive Access • Stream &amp; Download Videos</small>
+          </div>
+        </div>
+
+        <!-- Data Analytics & Business Intelligence Course Card -->
+        <div class="course-card featured-course" data-category="analytics" data-aos="fade-up">
+          <div class="course-badge">🆕 New • Free Full Video Course</div>
+          <div class="course-header">
+            <div class="course-icon-wrap">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            </div>
+            <div class="course-title-area">
+              <h3>Data Analytics and Business Intelligence</h3>
+              <span class="course-meta">178 Video Lessons • Videos &amp; Files Included</span>
+            </div>
+          </div>
+          <p class="course-desc">A complete, ground-up Data Analytics &amp; Business Intelligence course. Covers analytics fundamentals, BI tools and techniques, and real-world project workflows across 178 video lessons.</p>
+          <div class="course-features">
+            <div class="c-feat">📹 178 Video Lessons</div>
+            <div class="c-feat">📂 Downloadable Course Files</div>
+            <div class="c-feat">🔎 Searchable Lesson List</div>
+            <div class="c-feat">💡 100% Free Access</div>
+          </div>
+          <div class="course-footer" style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <a href="data-analytics-course.html" class="btn btn-primary full" style="justify-content: center; text-decoration: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>▶ Start Course</span>
+            </a>
+            <small class="drive-note">📚 Videos Tab &amp; Files Tab • Updated as new lessons are added</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="request-course-box" data-aos="fade-up">
+        <h3>Need a Specific Course or Tutorial?</h3>
+        <p>If you need a specific video course or material, request it below and Hassan will upload it for free!</p>
+        <button class="btn btn-outline" id="openCourseReqModalBtn">Request a Course</button>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ── REVIEWS & TESTIMONIALS ── -->
+  <section class="reviews-section section" id="reviews">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Testimonials</span>
+        <h2 class="section-title">What People <span class="gradient-text">Say</span></h2>
+      </div>
+
+      <div class="reviews-grid" id="reviewsGrid">
+        <!-- Reviews loaded dynamically -->
+      </div>
+
+      <div class="reviews-cta" data-aos="fade-up">
+        <button class="btn btn-outline" id="openReviewModalBtn">⭐ Submit Your Feedback</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="contact section" id="contact">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Get In Touch</span>
+        <h2 class="section-title">Let's <span class="gradient-text">Connect</span></h2>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info" data-aos="fade-right">
+          <p class="contact-intro">Have a project in mind? Need a specific course or video? Reach out anytime!</p>
+          <div class="contact-items">
+            <a href="mailto:mahadhassanlal@gmail.com" class="contact-item" id="emailLink">
+              <div class="contact-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <strong>Email</strong>
+                <span>mahadhassanlal@gmail.com</span>
+              </div>
+            </a>
+            <a href="https://github.com/mahad1117a" target="_blank" class="contact-item" id="githubLink">
+              <div class="contact-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              </div>
+              <div>
+                <strong>GitHub</strong>
+                <span>@mahad1117a</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- ── LIVE EMAIL CONTACT FORM WITH WEB3FORMS ── -->
+        <form class="contact-form" data-aos="fade-left" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+          <!-- Web3Forms Access Key -->
+          <input type="hidden" name="access_key" value="1ee1b825-470e-4478-8d9a-4fb0d7811863" />
+          <input type="hidden" name="subject" value="New Contact Form Submission from Apps Gravity" />
+          <input type="hidden" name="from_name" value="Apps Gravity Website" />
+
+          <div class="form-group">
+            <label for="nameInput">Your Name</label>
+            <input type="text" name="name" id="nameInput" placeholder="John Doe" required />
+          </div>
+          <div class="form-group">
+            <label for="emailInput">Email Address</label>
+            <input type="email" name="email" id="emailInput" placeholder="hello@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="serviceSelect">Service / Request</label>
+            <select name="service" id="serviceSelect">
+              <option value="">Select an option…</option>
+              <option value="Medical Billing Course Request">Medical Billing Course Request</option>
+              <option value="App Development">App Development</option>
+              <option value="Web Development">Web Development</option>
+              <option value="Project Quote Inquiry">Project Quote Inquiry</option>
+              <option value="Other Course Request">Other Course Request</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="messageInput">Your Message</label>
+            <textarea name="message" id="messageInput" rows="5" placeholder="Tell me what you need…" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary full" id="sendMessageBtn">
+            <span>Send Message</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+          <div class="form-success" id="formSuccess">
+            ✅ Message sent! I will receive it directly in my Gmail inbox.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo.jpg" alt="Apps Gravity" class="logo-img sm" />
+        <span>Apps <span class="gold">Gravity</span></span>
+      </div>
+      <p class="footer-copy">© 2026 Apps Gravity — Hassan. Crafted with ❤️ in Pakistan.</p>
+    </div>
+  </footer>
+
+  <!-- ── 🤖 FLOATING AI VISITOR ASSISTANT WIDGET ── -->
+  <div class="ai-widget-trigger" id="aiWidgetTrigger" title="Ask GravityBot AI Assistant">
+    <div class="ai-trigger-pulse"></div>
+    <div class="ai-trigger-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/><path d="M9 18h6"/></svg>
+    </div>
+    <span class="ai-trigger-badge">AI Assistant</span>
+  </div>
+
+  <div class="ai-chat-window" id="aiChatWindow">
+    <div class="ai-chat-header">
+      <div class="ai-header-info">
+        <div class="ai-avatar">
+          🤖
+          <span class="ai-status-dot"></span>
+        </div>
+        <div>
+          <h4>GravityBot AI</h4>
+          <small>Apps Gravity Assistant • Online</small>
+        </div>
+      </div>
+      <button class="ai-close-btn" id="closeAiChatBtn">&times;</button>
+    </div>
+
+    <div class="ai-chat-messages" id="aiChatMessages">
+      <div class="chat-msg bot">
+        <div class="msg-bubble">
+          👋 Hi there! I'm <strong>GravityBot AI</strong>. How can I assist you with Hassan's projects, free courses, or app development today?
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-quick-prompts">
+      <button class="quick-chip" data-prompt="📚 Medical Billing Course link">📚 Medical Billing Course</button>
+      <button class="quick-chip" data-prompt="📱 Tell me about Pak Advisory App">📱 Pak Advisory App</button>
+      <button class="quick-chip" data-prompt="🌐 Custom Web Development quote">🌐 Web Dev Services</button>
+      <button class="quick-chip" data-prompt="📬 How to contact Hassan">📬 Contact Hassan</button>
+    </div>
+
+    <div class="ai-chat-input-area">
+      <input type="text" id="aiChatInput" placeholder="Type your message..." />
+      <button id="sendAiChatBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MODAL: PAK ADVISORY APP PREVIEW ── -->
+  <div class="modal-overlay" id="pakAdvisoryModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closePakModalBtn">&times;</button>
+      <div class="modal-header">
+        <span class="tag">Featured Mobile App</span>
+        <h2>Pak Advisory App</h2>
+      </div>
+      <div class="modal-body">
+        <p><strong>Pak Advisory App</strong> is a mobile application developed by Hassan to deliver expert advisory services, community guidance, and business resources tailored for users in Pakistan.</p>
+        <div class="modal-highlights">
+          <div class="m-feat">📱 Clean Responsive UI/UX</div>
+          <div class="m-feat">⚡ Real-Time Data Updates</div>
+          <div class="m-feat">🔒 Secure User Management</div>
+          <div class="m-feat">🌐 Cross-Platform Ready</div>
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">Interested in creating a similar app for your business or venture?</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#contact" class="btn btn-primary" id="pakModalContactBtn">Request Similar App</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: COURSE REQUEST ── -->
+  <div class="modal-overlay" id="courseReqModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closeCourseReqModalBtn">&times;</button>
+      <div class="modal-header">
+        <span class="tag">Free Knowledge Hub</span>
+        <h2>Request a New Course</h2>
+      </div>
+      <form id="courseReqForm">
+        <div class="form-group">
+          <label>Course Topic / Title</label>
+          <input type="text" id="reqCourseTopic" placeholder="e.g. Flutter Mobile App Dev, Node.js..." required />
+        </div>
+        <div class="form-group">
+          <label>Your Email (Optional)</label>
+          <input type="email" id="reqCourseEmail" placeholder="your@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Additional Details</label>
+          <textarea id="reqCourseNotes" rows="3" placeholder="Tell us what specific topics you want included..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary full">Submit Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── MODAL: SUBMIT REVIEW ── -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closeReviewModalBtn">&times;</button>
+      <div class="modal-header">
+        <span class="tag">Client Feedback</span>
+        <h2>Submit Your Review</h2>
+      </div>
+      <form id="submitReviewForm">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="reviewNameInput" placeholder="John Doe" required />
+        </div>
+        <div class="form-group">
+          <label>Role / Title</label>
+          <input type="text" id="reviewRoleInput" placeholder="e.g. Client, Learner, Founder" />
+        </div>
+        <div class="form-group">
+          <label>Rating</label>
+          <select id="reviewRatingInput">
+            <option value="5">⭐⭐⭐⭐⭐ (5 Stars - Excellent)</option>
+            <option value="4">⭐⭐⭐⭐ (4 Stars - Great)</option>
+            <option value="3">⭐⭐⭐ (3 Stars - Good)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Your Feedback</label>
+          <textarea id="reviewCommentInput" rows="4" placeholder="Write your experience..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary full">Post Review</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Analytics and Business Intelligence | Apps Gravity</title>
+  <meta name="description" content="Free 178-lesson Data Analytics and Business Intelligence video course from Apps Gravity — watch lessons and access course files." />
+  <link rel="icon" type="image/jpg" href="logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="index.html#home" class="nav-logo">
+        <img src="logo.jpg" alt="Apps Gravity Logo" class="logo-img" />
+        <span class="logo-text">Apps <span class="gold">Gravity</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#courses" class="nav-link">All Courses</a></li>
+        <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── COURSE HEADER ── -->
+  <section class="course-page-hero">
+    <div class="container">
+      <a href="index.html#courses" class="course-page-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Courses
+      </a>
+      <h1 class="course-page-title">Data Analytics and <span class="gradient-text">Business Intelligence</span></h1>
+      <div class="course-page-meta">
+        <span class="lesson-meter"><i></i><i></i><i></i><i></i><i></i></span>
+        <span id="courseLessonCount">Video Lessons</span>
+        <span>📂 Course Files Included</span>
+        <span>💡 100% Free</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COURSE BODY ── -->
+  <section class="section">
+    <div class="container">
+
+      <div class="course-tabs">
+        <button class="course-tab-btn active" data-tab-target="videosTab">Videos</button>
+        <button class="course-tab-btn" data-tab-target="filesTab">Files</button>
+      </div>
+
+      <!-- VIDEOS TAB -->
+      <div class="course-tab-panel active" id="videosTab">
+        <div class="course-video-layout">
+
+          <div>
+            <div class="course-player-wrap">
+              <div class="course-player-frame" id="coursePlayerFrame">
+                <div class="player-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span>Select a lesson from the list to start watching</span>
+                </div>
+              </div>
+              <div class="course-now-playing" id="courseNowPlaying"><span>Select a lesson to begin</span></div>
+            </div>
+            <p class="course-ad-note">
+              ℹ️ Videos are embedded in privacy-enhanced mode. In-player ads are served directly by YouTube and can't be removed by this site — an ad blocker on your device is the only way to skip those.
+            </p>
+          </div>
+
+          <div>
+            <div class="course-list-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="courseLessonSearch" placeholder="Search lessons..." />
+            </div>
+            <div class="course-lesson-list" id="courseLessonList"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FILES TAB -->
+      <div class="course-tab-panel" id="filesTab">
+        <div class="course-files-grid" id="courseFilesGrid"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="logo.jpg" alt="Apps Gravity" class="logo-img sm" />
+        <span>Apps <span class="gold">Gravity</span></span>
+      </div>
+      <p class="footer-copy">© 2026 Apps Gravity — Hassan. Crafted with ❤️ in Pakistan.</p>
+    </div>
+  </footer>
+
+  <script src="course-analytics.js"></script>
+</body>
+</html>
