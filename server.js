@@ -13,7 +13,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const validator = require('validator');
 const cookieParser = require('cookie-parser');
-const { searchKnowledgeBase } = require('./knowledge-base');
+const { searchAllKnowledge, setCustomKnowledgeEntries } = require('./knowledge-base');
+const { loadStore, saveStore, slugify, UPLOADS_DIR } = require('./data-store');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -266,6 +267,50 @@ const verifyCSRFToken = (req, res, next) => {
   next();
 };
 
+// ── 🔐 ADMIN DASHBOARD AUTH ──
+// A lightweight session system for the admin dashboard, following the same pattern
+// as the CSRF token store above (in-memory token -> expiry map + periodic cleanup),
+// rather than pulling in a whole session-store dependency for a single-operator panel.
+const adminSessions = new Map(); // token -> expiry timestamp
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [token, expiry] of adminSessions.entries()) {
+    if (expiry < now) adminSessions.delete(token);
+  }
+}, 60 * 60 * 1000);
+
+// The admin password is never stored in plaintext, in code, or in .env — only a
+// scrypt hash + its salt are. See .env.example for the one-line command that
+// generates ADMIN_PASSWORD_HASH / ADMIN_PASSWORD_SALT from a real password.
+function verifyAdminPassword(inputPassword) {
+  const { ADMIN_PASSWORD_HASH, ADMIN_PASSWORD_SALT } = process.env;
+  if (!ADMIN_PASSWORD_HASH || !ADMIN_PASSWORD_SALT || !inputPassword) return false;
+  try {
+    const inputHash = crypto.scryptSync(String(inputPassword), ADMIN_PASSWORD_SALT, 64);
+    const storedHash = Buffer.from(ADMIN_PASSWORD_HASH, 'hex');
+    // timingSafeEqual requires equal-length buffers, and throws otherwise — a
+    // mismatched length just means "wrong", not a crash.
+    if (inputHash.length !== storedHash.length) return false;
+    return crypto.timingSafeEqual(inputHash, storedHash);
+  } catch (e) {
+    return false;
+  }
+}
+
+const verifyAdminSession = (req, res, next) => {
+  const token = req.cookies ? req.cookies.admin_session : undefined;
+  if (!token || !adminSessions.has(token)) {
+    return res.status(401).json({ error: 'Not authenticated. Please log in.' });
+  }
+  const expiry = adminSessions.get(token);
+  if (Date.now() > expiry) {
+    adminSessions.delete(token);
+    return res.status(401).json({ error: 'Session expired. Please log in again.' });
+  }
+  next();
+};
+
 // ── 8. RATE LIMITERS ──
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 mins
@@ -291,74 +336,74 @@ const chatLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Much stricter than the other limiters on purpose — this endpoint exists purely
+// to be brute-forced against, so 5 attempts per 15 minutes is deliberate, not a bug.
+const adminLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use('/api/', generalLimiter);
+
+// The admin dashboard should never be indexed by search engines or cached by
+// browsers/proxies — it's not secret-by-obscurity (real auth handles that), but
+// there's no reason for it to show up in search results or linger in a cache either.
+app.use(['/admin.html', '/api/admin'], (req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname)));
 
-// ── IN-MEMORY STORES / LOGS ──
-const quotesStore = [];
-const courseRequestsStore = [];
-const reviewsStore = [
-  {
-    id: 1,
-    name: "Usman Tariq",
-    role: "Startup Founder",
-    rating: 5,
-    comment: "Hassan built our mobile app from scratch. Phenomenal work, sleek UI, and super fast delivery!",
-    date: "2026-06-15"
-  },
-  {
-    id: 2,
-    name: "Dr. Ayesha Malik",
-    role: "Healthcare Professional",
-    rating: 5,
-    comment: "The Medical Billing Video Course hosted on Google Drive was a lifesaver. Clear, thorough, and 100% free!",
-    date: "2026-07-02"
-  },
-  {
-    id: 3,
-    name: "Bilal Ahmad",
-    role: "E-Commerce Director",
-    rating: 5,
-    comment: "Apps Gravity transformed our online store with custom web dev. Highly recommended!",
-    date: "2026-07-20"
-  }
-];
+// ── PERSISTENT DATA STORE ──
+const store = loadStore();
+setCustomKnowledgeEntries(store.customKnowledge);
 
-const coursesCatalog = [
-  {
-    id: "medical-billing",
-    title: "Medical Billing Complete Video Course",
-    category: "medical",
-    badge: "🔥 Free Full Video Course",
-    meta: "Full Video Lessons • Google Drive Access",
-    desc: "Comprehensive Medical Billing video course hosted on Google Drive. Covers claim submission, ICD-10 & CPT coding, revenue cycle management (RCM), and practical billing workflows.",
-    driveUrl: "https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link",
-    secureAccessRequired: true,
-    features: [
-      "🔒 End-to-End Secure Access",
-      "Hosted on Google Drive",
-      "100% Free Full Lessons",
-      "ICD/CPT & RCM Modules"
-    ]
-  },
-  {
-    id: "data-analytics-bi",
-    title: "Data Analytics and Business Intelligence",
-    category: "analytics",
-    badge: "🆕 New • Free Full Video Course",
-    meta: "178 Video Lessons • Videos & Files Included",
-    desc: "A complete, ground-up Data Analytics & Business Intelligence course. Covers analytics fundamentals, BI tools and techniques, and real-world project workflows across 178 video lessons.",
-    pageUrl: "data-analytics-course.html",
-    features: [
-      "📹 178 Video Lessons",
-      "📂 Downloadable Course Files",
-      "🔎 Searchable Lesson List",
-      "💡 100% Free Access"
-    ]
+const quotesStore = store.quotes;
+const courseRequestsStore = store.courseRequests;
+const reviewsStore = store.reviews;
+const coursesCatalog = store.courses;
+const postsStore = store.posts;
+const messagesStore = store.messages;
+const usersStore = store.users;
+const settingsStore = store.settings;
+const analyticsStore = store.analytics;
+const chatHistoryStore = store.chatHistory;
+const customKnowledgeStore = store.customKnowledge;
+const filesStore = store.files;
+
+function persistStore() {
+  setCustomKnowledgeEntries(customKnowledgeStore);
+  saveStore(store);
+}
+
+function trackPageView(page) {
+  const key = page || '/';
+  analyticsStore.pageViews[key] = (analyticsStore.pageViews[key] || 0) + 1;
+  const today = new Date().toISOString().split('T')[0];
+  let dayEntry = analyticsStore.dailyVisits.find(d => d.date === today);
+  if (!dayEntry) {
+    dayEntry = { date: today, count: 0 };
+    analyticsStore.dailyVisits.push(dayEntry);
   }
-];
+  dayEntry.count += 1;
+  if (analyticsStore.dailyVisits.length > 365) {
+    analyticsStore.dailyVisits.splice(0, analyticsStore.dailyVisits.length - 365);
+  }
+  persistStore();
+}
+
+function trackSearchQuery(query) {
+  const key = String(query || '').toLowerCase().trim().slice(0, 120);
+  if (!key) return;
+  analyticsStore.searchQueries[key] = (analyticsStore.searchQueries[key] || 0) + 1;
+  persistStore();
+}
 
 // Helper: Sanitize Text Input
 const sanitizeInput = (text) => {
@@ -623,7 +668,7 @@ async function getAiResponse(userMessage) {
   // 7. STRUCTURED KNOWLEDGE BASE — web dev, mobile dev, programming, cybersecurity,
   // data/analytics, AI, medical billing, business/freelancing, and general tech topics.
   // Checked only after the business-critical intents above, so those always win.
-  const kbMatch = searchKnowledgeBase(rawMsg);
+  const kbMatch = searchAllKnowledge(rawMsg);
   if (kbMatch) {
     return { text: kbMatch.answer, action: "knowledge_base", category: kbMatch.category };
   }
@@ -655,6 +700,16 @@ app.post('/api/chat', chatLimiter, verifyCSRFToken, async (req, res) => {
   }
   const cleanMessage = sanitizeInput(rawMessage.slice(0, 500));
   const reply = await getAiResponse(cleanMessage);
+  cappedPush(chatHistoryStore, {
+    id: Date.now(),
+    message: cleanMessage,
+    action: reply.action || 'unknown',
+    replyPreview: String(reply.text || '').slice(0, 200),
+    ip: req.ip,
+    timestamp: new Date().toISOString()
+  });
+  trackSearchQuery(cleanMessage);
+  persistStore();
   res.json({ success: true, reply });
 });
 
@@ -703,6 +758,7 @@ app.post('/api/quote', strictLimiter, verifyCSRFToken, (req, res) => {
   };
 
   cappedPush(quotesStore, quoteRecord);
+  persistStore();
 
   res.json({
     success: true,
@@ -754,6 +810,7 @@ app.post('/api/courses/request', strictLimiter, verifyCSRFToken, (req, res) => {
     date: new Date().toISOString()
   };
   cappedPush(courseRequestsStore, reqObj);
+  persistStore();
   res.json({ success: true, message: "Course request logged! Hassan will review it shortly." });
 });
 
@@ -781,7 +838,450 @@ app.post('/api/reviews', strictLimiter, verifyCSRFToken, (req, res) => {
   };
   reviewsStore.unshift(newReview);
   if (reviewsStore.length > MAX_LOG_ENTRIES) reviewsStore.length = MAX_LOG_ENTRIES;
+  persistStore();
   res.json({ success: true, review: newReview, message: "Review added successfully!" });
+});
+
+// 6. Contact Messages Endpoint
+app.post('/api/contact', strictLimiter, verifyCSRFToken, (req, res) => {
+  const { name, email, service, message } = req.body;
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'Name, email, and message are required.' });
+  }
+  if (!validator.isEmail(String(email))) {
+    return res.status(400).json({ error: 'Invalid email format.' });
+  }
+  const record = {
+    id: Date.now(),
+    name: sanitizeInput(String(name).slice(0, 100)),
+    email: sanitizeInput(String(email).slice(0, 150)),
+    service: service ? sanitizeInput(String(service).slice(0, 100)) : '',
+    message: sanitizeInput(String(message).slice(0, 2000)),
+    status: 'new',
+    createdAt: new Date().toISOString()
+  };
+  cappedPush(messagesStore, record);
+  persistStore();
+  res.json({ success: true, message: 'Message received! Hassan will get back to you soon.' });
+});
+
+// 7. Public Settings (safe fields only)
+app.get('/api/settings', (req, res) => {
+  res.json({
+    success: true,
+    settings: {
+      siteName: settingsStore.siteName,
+      founderName: settingsStore.founderName,
+      heroLine1: settingsStore.heroLine1,
+      heroLine2: settingsStore.heroLine2,
+      heroSubtitle: settingsStore.heroSubtitle,
+      contactEmail: settingsStore.contactEmail,
+      githubUrl: settingsStore.githubUrl,
+      logoUrl: settingsStore.logoUrl,
+      seoTitle: settingsStore.seoTitle,
+      seoDescription: settingsStore.seoDescription,
+      seoKeywords: settingsStore.seoKeywords
+    }
+  });
+});
+
+// 8. Published Posts
+app.get('/api/posts', (req, res) => {
+  const published = postsStore
+    .filter(p => p.status === 'published')
+    .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt));
+  res.json({ success: true, posts: published });
+});
+
+// 9. Analytics Page View Tracker
+app.post('/api/analytics/pageview', (req, res) => {
+  const page = sanitizeInput(String(req.body.page || '/').slice(0, 200));
+  trackPageView(page);
+  res.json({ success: true });
+});
+
+// ── 🔐 ADMIN DASHBOARD ROUTES ──
+// Single-operator login (password only, no username) — this dashboard has exactly
+// one intended user (the site owner), so a username field would add friction
+// without adding real security.
+app.post('/api/admin/login', adminLoginLimiter, verifyCSRFToken, (req, res) => {
+  const { password } = req.body;
+  if (!verifyAdminPassword(password)) {
+    cappedPush(threatLog, { ip: req.ip, reason: 'Failed admin login attempt', timestamp: new Date().toISOString() });
+    // Deliberately generic message — doesn't reveal whether admin auth is even configured.
+    return res.status(401).json({ error: 'Invalid password.' });
+  }
+  const token = crypto.randomBytes(32).toString('hex');
+  const maxAge = 12 * 60 * 60 * 1000; // 12 hours
+  adminSessions.set(token, Date.now() + maxAge);
+  res.cookie('admin_session', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge
+  });
+  res.json({ success: true });
+});
+
+app.post('/api/admin/logout', (req, res) => {
+  const token = req.cookies ? req.cookies.admin_session : undefined;
+  if (token) adminSessions.delete(token);
+  res.clearCookie('admin_session');
+  res.json({ success: true });
+});
+
+// Lets the dashboard page check "am I logged in?" on load without triggering a 401
+// in the browser console every time — the dashboard UI treats this as informational.
+app.get('/api/admin/session', (req, res) => {
+  const token = req.cookies ? req.cookies.admin_session : undefined;
+  const authenticated = !!(token && adminSessions.has(token) && Date.now() <= adminSessions.get(token));
+  res.json({ authenticated });
+});
+
+app.get('/api/admin/data', verifyAdminSession, (req, res) => {
+  const topPages = Object.entries(analyticsStore.pageViews || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([page, views]) => ({ page, views }));
+
+  const topQueries = Object.entries(analyticsStore.searchQueries || {})
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([query, count]) => ({ query, count }));
+
+  const totalViews = Object.values(analyticsStore.pageViews || {}).reduce((s, n) => s + n, 0);
+
+  res.json({
+    success: true,
+    quotes: [...quotesStore].reverse(),
+    courseRequests: [...courseRequestsStore].reverse(),
+    reviews: reviewsStore,
+    courses: coursesCatalog,
+    posts: postsStore,
+    messages: [...messagesStore].reverse(),
+    users: usersStore,
+    settings: settingsStore,
+    files: filesStore,
+    customKnowledge: customKnowledgeStore,
+    chatHistory: [...chatHistoryStore].reverse().slice(0, 200),
+    analytics: {
+      totalViews,
+      topPages,
+      topQueries,
+      dailyVisits: analyticsStore.dailyVisits || [],
+      newMessages: messagesStore.filter(m => m.status === 'new').length
+    }
+  });
+});
+
+app.delete('/api/admin/reviews/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = reviewsStore.findIndex(r => r.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Review not found.' });
+  reviewsStore.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// ── Admin: Messages ──
+app.patch('/api/admin/messages/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const msg = messagesStore.find(m => m.id === id);
+  if (!msg) return res.status(404).json({ error: 'Message not found.' });
+  const { status } = req.body;
+  if (['new', 'read', 'resolved'].includes(status)) msg.status = status;
+  persistStore();
+  res.json({ success: true, message: msg });
+});
+
+app.delete('/api/admin/messages/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = messagesStore.findIndex(m => m.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Message not found.' });
+  messagesStore.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// ── Admin: Courses CRUD ──
+app.post('/api/admin/courses', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const { title, category, badge, meta, desc, driveUrl, youtubeUrl, pageUrl, features, secureAccessRequired } = req.body;
+  if (!title) return res.status(400).json({ error: 'Course title is required.' });
+  const course = {
+    id: slugify(title) + '-' + Date.now().toString(36),
+    title: sanitizeInput(String(title).slice(0, 200)),
+    category: sanitizeInput(String(category || 'general').slice(0, 50)),
+    badge: badge ? sanitizeInput(String(badge).slice(0, 100)) : '',
+    meta: meta ? sanitizeInput(String(meta).slice(0, 200)) : '',
+    desc: desc ? sanitizeInput(String(desc).slice(0, 1000)) : '',
+    driveUrl: driveUrl ? sanitizeInput(String(driveUrl).slice(0, 500)) : '',
+    youtubeUrl: youtubeUrl ? sanitizeInput(String(youtubeUrl).slice(0, 500)) : '',
+    pageUrl: pageUrl ? sanitizeInput(String(pageUrl).slice(0, 200)) : '',
+    secureAccessRequired: !!secureAccessRequired,
+    features: Array.isArray(features) ? features.map(f => sanitizeInput(String(f).slice(0, 100))) : []
+  };
+  coursesCatalog.unshift(course);
+  persistStore();
+  res.json({ success: true, course });
+});
+
+app.put('/api/admin/courses/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const course = coursesCatalog.find(c => c.id === req.params.id);
+  if (!course) return res.status(404).json({ error: 'Course not found.' });
+  const fields = ['title', 'category', 'badge', 'meta', 'desc', 'driveUrl', 'youtubeUrl', 'pageUrl'];
+  fields.forEach(f => {
+    if (req.body[f] !== undefined) course[f] = sanitizeInput(String(req.body[f]).slice(0, f === 'desc' ? 1000 : 500));
+  });
+  if (req.body.features !== undefined && Array.isArray(req.body.features)) {
+    course.features = req.body.features.map(f => sanitizeInput(String(f).slice(0, 100)));
+  }
+  if (req.body.secureAccessRequired !== undefined) course.secureAccessRequired = !!req.body.secureAccessRequired;
+  persistStore();
+  res.json({ success: true, course });
+});
+
+app.delete('/api/admin/courses/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const idx = coursesCatalog.findIndex(c => c.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Course not found.' });
+  coursesCatalog.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// ── Admin: Posts CRUD ──
+app.post('/api/admin/posts', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const { title, content, status, excerpt } = req.body;
+  if (!title) return res.status(400).json({ error: 'Post title is required.' });
+  const now = new Date().toISOString();
+  const post = {
+    id: Date.now(),
+    slug: slugify(title),
+    title: sanitizeInput(String(title).slice(0, 200)),
+    excerpt: excerpt ? sanitizeInput(String(excerpt).slice(0, 300)) : '',
+    content: sanitizeInput(String(content || '').slice(0, 10000)),
+    status: status === 'published' ? 'published' : 'draft',
+    createdAt: now,
+    updatedAt: now
+  };
+  postsStore.unshift(post);
+  persistStore();
+  res.json({ success: true, post });
+});
+
+app.put('/api/admin/posts/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const post = postsStore.find(p => p.id === id);
+  if (!post) return res.status(404).json({ error: 'Post not found.' });
+  if (req.body.title !== undefined) {
+    post.title = sanitizeInput(String(req.body.title).slice(0, 200));
+    post.slug = slugify(post.title);
+  }
+  if (req.body.content !== undefined) post.content = sanitizeInput(String(req.body.content).slice(0, 10000));
+  if (req.body.excerpt !== undefined) post.excerpt = sanitizeInput(String(req.body.excerpt).slice(0, 300));
+  if (req.body.status !== undefined) post.status = req.body.status === 'published' ? 'published' : 'draft';
+  post.updatedAt = new Date().toISOString();
+  persistStore();
+  res.json({ success: true, post });
+});
+
+app.delete('/api/admin/posts/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = postsStore.findIndex(p => p.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Post not found.' });
+  postsStore.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// ── Admin: AI Knowledge CRUD ──
+app.post('/api/admin/knowledge', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const { category, keywords, answer } = req.body;
+  if (!answer || !Array.isArray(keywords) || !keywords.length) {
+    return res.status(400).json({ error: 'Keywords and answer are required.' });
+  }
+  const entry = {
+    id: Date.now(),
+    category: sanitizeInput(String(category || 'Custom').slice(0, 80)),
+    keywords: keywords.map(k => sanitizeInput(String(k).slice(0, 80))).filter(Boolean),
+    answer: sanitizeInput(String(answer).slice(0, 3000))
+  };
+  customKnowledgeStore.unshift(entry);
+  setCustomKnowledgeEntries(customKnowledgeStore);
+  persistStore();
+  res.json({ success: true, entry });
+});
+
+app.put('/api/admin/knowledge/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const entry = customKnowledgeStore.find(e => e.id === id);
+  if (!entry) return res.status(404).json({ error: 'Knowledge entry not found.' });
+  if (req.body.category !== undefined) entry.category = sanitizeInput(String(req.body.category).slice(0, 80));
+  if (req.body.keywords !== undefined && Array.isArray(req.body.keywords)) {
+    entry.keywords = req.body.keywords.map(k => sanitizeInput(String(k).slice(0, 80))).filter(Boolean);
+  }
+  if (req.body.answer !== undefined) entry.answer = sanitizeInput(String(req.body.answer).slice(0, 3000));
+  setCustomKnowledgeEntries(customKnowledgeStore);
+  persistStore();
+  res.json({ success: true, entry });
+});
+
+app.delete('/api/admin/knowledge/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = customKnowledgeStore.findIndex(e => e.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Knowledge entry not found.' });
+  customKnowledgeStore.splice(idx, 1);
+  setCustomKnowledgeEntries(customKnowledgeStore);
+  persistStore();
+  res.json({ success: true });
+});
+
+// ── Admin: Users ──
+app.post('/api/admin/users', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const { name, email, role } = req.body;
+  if (!name || !email) return res.status(400).json({ error: 'Name and email are required.' });
+  if (!validator.isEmail(String(email))) return res.status(400).json({ error: 'Invalid email.' });
+  const validRoles = ['admin', 'editor', 'student'];
+  const user = {
+    id: Date.now(),
+    name: sanitizeInput(String(name).slice(0, 100)),
+    email: sanitizeInput(String(email).slice(0, 150)),
+    role: validRoles.includes(role) ? role : 'student',
+    createdAt: new Date().toISOString()
+  };
+  usersStore.push(user);
+  persistStore();
+  res.json({ success: true, user });
+});
+
+app.put('/api/admin/users/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const user = usersStore.find(u => u.id === id);
+  if (!user) return res.status(404).json({ error: 'User not found.' });
+  if (req.body.name !== undefined) user.name = sanitizeInput(String(req.body.name).slice(0, 100));
+  if (req.body.email !== undefined) {
+    if (!validator.isEmail(String(req.body.email))) return res.status(400).json({ error: 'Invalid email.' });
+    user.email = sanitizeInput(String(req.body.email).slice(0, 150));
+  }
+  if (req.body.role !== undefined && ['admin', 'editor', 'student'].includes(req.body.role)) {
+    user.role = req.body.role;
+  }
+  persistStore();
+  res.json({ success: true, user });
+});
+
+app.delete('/api/admin/users/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = usersStore.findIndex(u => u.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'User not found.' });
+  if (usersStore.length <= 1) return res.status(400).json({ error: 'Cannot delete the last user.' });
+  usersStore.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// ── Admin: Settings ──
+app.put('/api/admin/settings', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const allowed = ['siteName', 'founderName', 'heroLine1', 'heroLine2', 'heroSubtitle', 'contactEmail', 'githubUrl', 'logoUrl', 'seoTitle', 'seoDescription', 'seoKeywords'];
+  allowed.forEach(key => {
+    if (req.body[key] !== undefined) {
+      settingsStore[key] = sanitizeInput(String(req.body[key]).slice(0, key.includes('seo') || key === 'heroSubtitle' ? 500 : 200));
+    }
+  });
+  persistStore();
+  res.json({ success: true, settings: settingsStore });
+});
+
+// ── Admin: Files (base64 upload) ──
+app.post('/api/admin/files', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const { filename, contentBase64, mimeType } = req.body;
+  if (!filename || !contentBase64) return res.status(400).json({ error: 'Filename and content are required.' });
+  const safeName = String(filename).replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+  const uniqueName = `${Date.now()}-${safeName}`;
+  const filePath = path.join(UPLOADS_DIR, uniqueName);
+  try {
+    const buffer = Buffer.from(String(contentBase64), 'base64');
+    if (buffer.length > 10 * 1024 * 1024) return res.status(400).json({ error: 'File too large (max 10MB).' });
+    fs.writeFileSync(filePath, buffer);
+    const record = {
+      id: Date.now(),
+      originalName: safeName,
+      storedName: uniqueName,
+      url: `/data/uploads/${uniqueName}`,
+      mimeType: mimeType ? sanitizeInput(String(mimeType).slice(0, 80)) : 'application/octet-stream',
+      size: buffer.length,
+      uploadedAt: new Date().toISOString()
+    };
+    filesStore.unshift(record);
+    persistStore();
+    res.json({ success: true, file: record });
+  } catch (err) {
+    res.status(400).json({ error: 'Invalid file data.' });
+  }
+});
+
+app.delete('/api/admin/files/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = filesStore.findIndex(f => f.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'File not found.' });
+  const file = filesStore[idx];
+  const filePath = path.join(UPLOADS_DIR, file.storedName);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  filesStore.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// Serve uploaded files
+app.use('/data/uploads', express.static(UPLOADS_DIR));
+
+// ── Admin: Backup & Restore ──
+app.get('/api/admin/backup', verifyAdminSession, (req, res) => {
+  res.setHeader('Content-Disposition', `attachment; filename="apps-gravity-backup-${Date.now()}.json"`);
+  res.json(store);
+});
+
+app.post('/api/admin/restore', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const backup = req.body;
+  if (!backup || typeof backup !== 'object') return res.status(400).json({ error: 'Invalid backup data.' });
+
+  const replaceArray = (target, source) => {
+    target.length = 0;
+    if (Array.isArray(source)) target.push(...source);
+  };
+
+  replaceArray(quotesStore, backup.quotes);
+  replaceArray(courseRequestsStore, backup.courseRequests);
+  replaceArray(reviewsStore, backup.reviews);
+  replaceArray(coursesCatalog, backup.courses);
+  replaceArray(postsStore, backup.posts);
+  replaceArray(messagesStore, backup.messages);
+  replaceArray(usersStore, backup.users);
+  replaceArray(chatHistoryStore, backup.chatHistory);
+  replaceArray(customKnowledgeStore, backup.customKnowledge);
+  replaceArray(filesStore, backup.files);
+
+  if (backup.settings) Object.assign(settingsStore, backup.settings);
+  if (backup.analytics) Object.assign(analyticsStore, backup.analytics);
+
+  setCustomKnowledgeEntries(customKnowledgeStore);
+  persistStore();
+  res.json({ success: true, message: 'Backup restored successfully.' });
+});
+
+app.delete('/api/admin/chat/:id', verifyAdminSession, verifyCSRFToken, (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = chatHistoryStore.findIndex(c => c.id === id);
+  if (idx === -1) return res.status(404).json({ error: 'Chat entry not found.' });
+  chatHistoryStore.splice(idx, 1);
+  persistStore();
+  res.json({ success: true });
+});
+
+// Serve Static Frontend Files
+app.use(express.static(__dirname));
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // Generic 404 Handler
@@ -796,9 +1296,18 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'production' ? 'An internal server error occurred.' : err.message
   });
 });
-
 // Start Server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🔒 Enterprise Secure Apps Gravity Server running on http://localhost:${PORT}`);
 });
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Error: Port ${PORT} is already in use by another running process.`);
+    console.error(`👉 The server is already running! You can access it directly at: http://localhost:${PORT}/admin`);
+    console.error(`👉 To restart, run: Stop-Process -Id (Get-NetTCPConnection -LocalPort ${PORT}).OwningProcess -Force\n`);
+    process.exit(1);
+  } else {
+    throw err;
+  }
+});

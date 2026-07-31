@@ -33,6 +33,49 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   fetchCSRFToken();
 
+  // ── Analytics: track page view ──
+  fetch('/api/analytics/pageview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ page: window.location.pathname || '/' })
+  }).catch(() => {});
+
+  // ── Load site settings from admin dashboard ──
+  async function applySiteSettings() {
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      if (!data.success || !data.settings) return;
+      const s = data.settings;
+      if (s.seoTitle) document.title = s.seoTitle;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc && s.seoDescription) metaDesc.content = s.seoDescription;
+      const metaKeys = document.querySelector('meta[name="keywords"]');
+      if (metaKeys && s.seoKeywords) metaKeys.content = s.seoKeywords;
+      const line1 = document.querySelector('.hero-title .line-1');
+      const line2 = document.querySelector('.hero-title .line-2');
+      if (line1 && s.heroLine1) line1.textContent = s.heroLine1;
+      if (line2 && s.heroLine2) line2.textContent = s.heroLine2;
+      const heroSub = document.querySelector('.hero-subtitle');
+      if (heroSub && s.heroSubtitle) {
+        heroSub.innerHTML = s.heroSubtitle
+          .replace(/Hassan/g, `<strong class="gold">${s.founderName || 'Hassan'}</strong>`)
+          .replace(/Apps Gravity/g, '<strong class="gold">Apps Gravity</strong>');
+      }
+      const emailLink = document.getElementById('emailLink');
+      if (emailLink && s.contactEmail) {
+        emailLink.href = `mailto:${s.contactEmail}`;
+        const emailText = emailLink.querySelector('.contact-text span:last-child');
+        if (emailText) emailText.textContent = s.contactEmail;
+      }
+      const githubLink = document.getElementById('githubLink');
+      if (githubLink && s.githubUrl) githubLink.href = s.githubUrl;
+      const logoImg = document.querySelector('.logo-img');
+      if (logoImg && s.logoUrl) logoImg.src = s.logoUrl;
+    } catch (err) { /* settings optional */ }
+  }
+  applySiteSettings();
+
   // ── CURSOR GLOW & DOT ──
   const cursorGlow = document.getElementById('cursorGlow');
   const cursorDot = document.getElementById('cursorDot');
@@ -823,7 +866,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ── LIVE WEB3FORMS CONTACT FORM SUBMISSION ──
+  // ── CONTACT FORM — saves to admin dashboard + optional Web3Forms email ──
   const contactForm = document.getElementById('contactForm');
   const formSuccess = document.getElementById('formSuccess');
 
@@ -836,26 +879,38 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = true;
       btn.innerHTML = 'Sending Message...';
 
-      const formData = new FormData(contactForm);
+      const name = contactForm.querySelector('[name="name"]')?.value || '';
+      const email = contactForm.querySelector('[name="email"]')?.value || '';
+      const service = contactForm.querySelector('[name="service"]')?.value || '';
+      const message = contactForm.querySelector('[name="message"]')?.value || '';
+
+      if (!csrfToken) await fetchCSRFToken();
 
       try {
-        const response = await fetch('https://api.web3forms.com/submit', {
+        const response = await fetch('/api/contact', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+          body: JSON.stringify({ name, email, service, message })
         });
         const data = await response.json();
 
         if (data.success) {
+          // Forward to Web3Forms for email notification (non-blocking, before reset)
+          const formData = new FormData(contactForm);
+          formData.set('name', name);
+          formData.set('email', email);
+          formData.set('service', service);
+          formData.set('message', message);
+          fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).catch(() => {});
+
           contactForm.reset();
           if (formSuccess) {
             formSuccess.style.display = 'block';
-            formSuccess.innerText = '✅ Message sent! I will receive it directly in my Gmail inbox.';
-            setTimeout(() => {
-              formSuccess.style.display = 'none';
-            }, 6000);
+            formSuccess.innerText = '✅ Message sent! Hassan will get back to you soon.';
+            setTimeout(() => { formSuccess.style.display = 'none'; }, 6000);
           }
         } else {
-          alert('Something went wrong submitting form. Please try again.');
+          alert(data.error || 'Something went wrong. Please try again.');
         }
       } catch (err) {
         alert('Network error. Please check your internet connection.');

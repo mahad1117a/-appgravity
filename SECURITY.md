@@ -74,6 +74,14 @@ Prevents Denial of Service (DoS) and automated bot spamming:
 - Matching uses whole-word/phrase boundaries (not raw substring checks), which also fixed pre-existing false-positive bugs in the older hardcoded intents (e.g. `"app"` previously matched inside `"happy"`/`"appreciate"`; `"rate"` matched inside `"generate"`/`"separate"`).
 - When nothing in the knowledge base or the business-specific FAQ matches, the bot no longer scrapes DuckDuckGo's HTML (fragile, and a grey area under DuckDuckGo's terms of use). It now optionally shows a quick Wikipedia summary (a real, documented public API) and always includes a direct Google search link, so a visitor is never left with nothing.
 
+### G. Admin Dashboard Authentication (`/admin.html`)
+- **Password storage**: only a scrypt hash + salt live in `.env` (`ADMIN_PASSWORD_HASH` / `ADMIN_PASSWORD_SALT`) — the real password is never stored, logged, or committed anywhere. Comparison uses `crypto.timingSafeEqual` to avoid timing attacks.
+- **No default credentials**: if the hash/salt aren't set in `.env`, login always fails safely — there is no built-in fallback password.
+- **Session cookie**: a random 32-byte token, `httpOnly`, `sameSite: strict`, `secure` in production, expiring after 12 hours, tracked server-side (same in-memory pattern as the CSRF token store, with the same periodic cleanup).
+- **Brute-force protection**: `/api/admin/login` is limited to 5 attempts per 15 minutes per IP (far stricter than the general API limiter), and failed attempts are logged to the existing threat log for visibility.
+- **Not indexed, not cached**: `/admin.html` and `/api/admin/*` send `X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store`, and are excluded via `robots.txt`.
+- **Single-operator design**: login is password-only (no username) since the dashboard has exactly one intended user — this isn't a security shortcut, it's matching the auth to the actual number of accounts that will ever exist.
+
 ---
 
 ## 3. Client-Side Protections & Fixes (`script.js`)

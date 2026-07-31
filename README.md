@@ -12,7 +12,8 @@ Apps Gravity is a futuristic, luxury-styled full-stack platform dedicated to cus
 - **🧮 Interactive Project Estimator**: Live cost and turnaround time calculator for Web Apps, Mobile Apps, and Full-Stack Systems with custom feature add-ons.
 - **📚 Searchable Free Courses Hub**: Expandable course library featuring **Medical Billing Complete Video Course** (hosted on Google Drive) alongside Web Dev, Mobile App, and Python automation courses with real-time search & filter chips.
 - **📱 Pak Advisory App Interactive Showcase**: Modal preview featuring app structure, features, tech stack, and inquiry bridge.
-- **⭐ Client Testimonials & Review System**: Interactive review cards with real-time review submission modal.
+- **⭐ Client Testimonials & Review System**: Interactive review cards with real-time review submission modal, shared across all visitors via the backend.
+- **🔒 Admin Dashboard** (`/admin.html`): Password-protected panel for viewing incoming quote requests, course requests, and reviews (with the ability to delete a review) — see "Setting Up the Admin Dashboard" below.
 - **⚡ Express Backend Server**: Node.js & Express API endpoints for AI chat, project quotes, course distribution, review posting, and contact form handling.
 - **✨ Luxury & Futuristic Aesthetic**: Built with deep dark mode gradients, metallic gold accents, glow effects, interactive cursor tracking, and a dynamic background particle engine.
 
@@ -34,11 +35,29 @@ apps-gravity/
 ├── knowledge-base.js # GravityBot's structured knowledge base + search engine
 ├── package.json     # Node.js dependencies & scripts
 ├── index.html       # Main HTML webpage structure with Chatbot, Estimator & Modals
+├── admin.html       # Password-protected admin dashboard (quotes, course requests, reviews)
+├── admin.js         # Admin dashboard login flow + data rendering
 ├── style.css        # Custom design system, luxury dark/gold glassmorphism styling
 ├── script.js        # Interactive particles, AI Chat engine, Estimator math & Modals
+├── robots.txt       # Search engine crawl rules (keeps /admin.html out of search results)
 ├── logo.jpg         # Custom futuristic Apps Gravity logo
 └── README.md        # Project documentation
 ```
+
+---
+
+## 🔒 Setting Up the Admin Dashboard
+
+The dashboard at `/admin.html` is disabled by default (login always fails) until you set a password:
+
+1. Choose a strong password, then generate its hash:
+   ```bash
+   node -e "const c=require('crypto');const s=c.randomBytes(16).toString('hex');console.log('ADMIN_PASSWORD_SALT='+s);console.log('ADMIN_PASSWORD_HASH='+c.scryptSync('YOUR_PASSWORD_HERE',s,64).toString('hex'))"
+   ```
+2. Copy the two printed lines into your `.env` file, replacing the empty `ADMIN_PASSWORD_SALT=` / `ADMIN_PASSWORD_HASH=` placeholders.
+3. Restart the server, then open `/admin.html` and log in with the password you chose in step 1 (the hash itself is never the password — don't try to log in with it).
+
+Your actual password is never stored anywhere — only the one-way hash is.
 
 ---
 
@@ -65,7 +84,7 @@ apps-gravity/
 - **Email**: [mahadhassanlal@gmail.com](mailto:mahadhassanlal@gmail.com)
 - **GitHub**: [@mahad1117a](https://github.com/mahad1117a)
 - **Instagram**: [@mahad1117a](https://instagram.com/mahad1117a)
-- **Twitter / X**: [@mahad1117a](https://twitter.com/mahad1117a)
+- **Twitter / X**: [@mahad1117a](https://twitter.com/mahad1117A)
 
 ---
 
