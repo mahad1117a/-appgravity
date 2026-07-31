@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Dashboard | Apps Gravity</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body.admin-body {
+      min-height: 100vh;
+      background: var(--bg-dark);
+      padding: 1.5rem 1rem 3rem;
+    }
+    .admin-wrap { max-width: 1200px; margin: 0 auto; width: 100%; }
+    #adminLoginView {
+      max-width: 380px;
+      margin: 10vh auto 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    #adminLoginView h1 {
+      font-family: var(--font-heading);
+      color: var(--gold-primary);
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+    #adminLoginView input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      font-family: var(--font-body);
+    }
+    #adminLoginError { color: #f87171; font-size: 0.85rem; min-height: 1.2em; margin-bottom: 0.8rem; }
+    #adminDashboardView { display: none; }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .admin-header h1 {
+      font-family: var(--font-heading);
+      color: var(--gold-primary);
+      font-size: 1.4rem;
+    }
+    .admin-header-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    #logoutBtn, .admin-secondary-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      font-family: var(--font-sub);
+      font-size: 0.85rem;
+    }
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+    .admin-stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .admin-stat-num { font-size: 1.6rem; font-weight: 700; color: var(--gold-primary); }
+    .admin-stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; }
+    .admin-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .admin-tab-btn {
+      padding: 0.5rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-sub);
+      font-size: 0.82rem;
+      transition: var(--transition-fast);
+    }
+    .admin-tab-btn.active {
+      background: var(--gold-primary);
+      color: #090b10;
+      border-color: var(--gold-primary);
+    }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+    .admin-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .admin-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    .admin-card-title { font-weight: 600; color: var(--text-main); }
+    .admin-card-meta { font-size: 0.8rem; color: var(--text-muted); }
+    .admin-card-body { color: var(--text-muted); font-size: 0.92rem; line-height: 1.5; }
+    .admin-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+      background: var(--bg-card-hover);
+      color: var(--accent-blue);
+      font-size: 0.72rem;
+      margin: 0.2rem 0.3rem 0.2rem 0;
+    }
+    .admin-badge.status-new { color: #fbbf24; }
+    .admin-badge.status-read { color: #60a5fa; }
+    .admin-badge.status-resolved { color: #34d399; }
+    .admin-badge.status-draft { color: var(--text-muted); }
+    .admin-badge.status-published { color: #34d399; }
+    .admin-empty { color: var(--text-muted); text-align: center; padding: 2rem; }
+    .admin-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.7rem; }
+    .admin-delete-btn, .admin-edit-btn, .admin-action-btn {
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: var(--font-sub);
+    }
+    .admin-delete-btn {
+      background: transparent;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      color: #f87171;
+    }
+    .admin-edit-btn, .admin-action-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+    .admin-form {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+    .admin-form h3 {
+      font-family: var(--font-heading);
+      color: var(--gold-primary);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .admin-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+    @media (max-width: 600px) { .admin-form-row { grid-template-columns: 1fr; } }
+    .admin-form label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+    .admin-form input, .admin-form select, .admin-form textarea {
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+    }
+    .admin-form textarea { min-height: 80px; resize: vertical; }
+    .admin-form textarea.tall { min-height: 140px; }
+    .admin-form-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+    .admin-submit-btn {
+      background: var(--gold-primary);
+      color: #090b10;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.2rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: var(--font-sub);
+    }
+    .admin-list-title {
+      font-family: var(--font-heading);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      margin: 1rem 0 0.8rem;
+    }
+    .admin-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--gold-primary);
+      color: #090b10;
+      padding: 0.7rem 1.2rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    .admin-toast.show { opacity: 1; }
+  </style>
+</head>
+<body class="admin-body">
+  <div class="admin-wrap">
+
+    <!-- LOGIN -->
+    <div id="adminLoginView">
+      <h1>🔒 Admin Dashboard</h1>
+      <form id="adminLoginForm">
+        <input type="password" id="adminPasswordInput" placeholder="Admin password" autocomplete="current-password" required />
+        <div id="adminLoginError"></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Log In</button>
+      </form>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="adminDashboardView">
+      <div class="admin-header">
+        <h1>Apps Gravity — Admin</h1>
+        <div class="admin-header-actions">
+          <a href="/" class="admin-secondary-btn" style="text-decoration:none;display:inline-flex;align-items:center;">← View Site</a>
+          <button id="logoutBtn">Log Out</button>
+        </div>
+      </div>
+
+      <div class="admin-stats" id="adminStats"></div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="overview">📊 Overview</button>
+        <button class="admin-tab-btn" data-tab="messages">💬 Messages (<span id="messagesCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="courses">📚 Courses (<span id="coursesCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="posts">📝 Posts (<span id="postsCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="knowledge">🧠 AI Knowledge (<span id="knowledgeCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="chat">🤖 Chat History (<span id="chatCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="quotes">💰 Quotes (<span id="quotesCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="courseRequests">📩 Course Requests (<span id="courseRequestsCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="reviews">⭐ Reviews (<span id="reviewsCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="users">👥 Users (<span id="usersCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="files">🖼️ Files (<span id="filesCount">0</span>)</button>
+        <button class="admin-tab-btn" data-tab="settings">⚙️ Settings</button>
+        <button class="admin-tab-btn" data-tab="backup">💾 Backup</button>
+      </div>
+
+      <div class="admin-panel active" id="panel-overview"></div>
+      <div class="admin-panel" id="panel-messages"></div>
+      <div class="admin-panel" id="panel-courses"></div>
+      <div class="admin-panel" id="panel-posts"></div>
+      <div class="admin-panel" id="panel-knowledge"></div>
+      <div class="admin-panel" id="panel-chat"></div>
+      <div class="admin-panel" id="panel-quotes"></div>
+      <div class="admin-panel" id="panel-courseRequests"></div>
+      <div class="admin-panel" id="panel-reviews"></div>
+      <div class="admin-panel" id="panel-users"></div>
+      <div class="admin-panel" id="panel-files"></div>
+      <div class="admin-panel" id="panel-settings"></div>
+      <div class="admin-panel" id="panel-backup"></div>
+    </div>
+  </div>
+
+  <div class="admin-toast" id="adminToast"></div>
+  <script src="admin.js"></script>
+</body>
+</html>
