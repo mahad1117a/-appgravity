@@ -734,7 +734,60 @@ function searchKnowledgeBase(rawQuery, threshold = 4) {
 }
 
 function getCategoryList() {
-  return [...new Set(KNOWLEDGE_BASE.map(e => e.category))];
+  const staticCats = KNOWLEDGE_BASE.map(e => e.category);
+  const customCats = customKnowledgeEntries.map(e => e.category);
+  return [...new Set([...staticCats, ...customCats])];
 }
 
-module.exports = { KNOWLEDGE_BASE, searchKnowledgeBase, getCategoryList };
+// Admin-managed Q&A entries (persisted in data/store.json)
+let customKnowledgeEntries = [];
+
+function setCustomKnowledgeEntries(entries) {
+  customKnowledgeEntries = Array.isArray(entries) ? entries : [];
+}
+
+function getCustomKnowledgeEntries() {
+  return customKnowledgeEntries;
+}
+
+function searchAllKnowledge(query, threshold = 4) {
+  const staticMatch = searchKnowledgeBase(query, threshold);
+  if (staticMatch) return staticMatch;
+
+  const normalizedQuery = normalizeText(query);
+  if (!normalizedQuery) return null;
+  const paddedQuery = ` ${normalizedQuery} `;
+
+  let best = null;
+  let bestScore = 0;
+
+  for (const entry of customKnowledgeEntries) {
+    let score = 0;
+    for (const kw of entry.keywords || []) {
+      const nkw = normalizeText(kw);
+      if (!nkw) continue;
+      const paddedKw = ` ${nkw} `;
+      if (normalizedQuery === nkw) {
+        score += 12;
+      } else if (paddedQuery.includes(paddedKw)) {
+        const wordCount = nkw.split(' ').length;
+        score += wordCount >= 2 ? 5 * wordCount : (GENERIC_SINGLE_WORDS.has(nkw) ? 1 : 4);
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = entry;
+    }
+  }
+
+  return bestScore >= threshold ? best : null;
+}
+
+module.exports = {
+  KNOWLEDGE_BASE,
+  searchKnowledgeBase,
+  searchAllKnowledge,
+  getCategoryList,
+  setCustomKnowledgeEntries,
+  getCustomKnowledgeEntries
+};
