@@ -224,6 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
       card.appendChild(el('span', { className: `admin-badge status-${m.status || 'new'}`, text: m.status || 'new' }));
       if (m.service) card.appendChild(el('span', { className: 'admin-badge', text: m.service }));
       card.appendChild(el('div', { className: 'admin-card-body', text: m.message }));
+      
+      const actions = el('div', { className: 'admin-actions' });
       const replyBtn = el('a', { className: 'admin-action-btn', text: '✉️ Reply via Email', href: `mailto:${encodeURIComponent(m.email)}?subject=${encodeURIComponent('Re: Contact Inquiry - Apps Gravity')}` });
       replyBtn.style.display = 'inline-block';
       replyBtn.style.textDecoration = 'none';

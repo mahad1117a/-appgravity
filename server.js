@@ -862,6 +862,28 @@ app.post('/api/contact', strictLimiter, verifyCSRFToken, (req, res) => {
   };
   cappedPush(messagesStore, record);
   persistStore();
+
+  // Forward to Web3Forms for email notification (non-blocking server-side)
+  const web3Key = process.env.WEB3FORMS_ACCESS_KEY;
+  if (web3Key) {
+    const web3Body = {
+      access_key: web3Key,
+      subject: `New Contact Form Submission from Apps Gravity`,
+      from_name: `Apps Gravity Website`,
+      name: record.name,
+      email: record.email,
+      service: record.service,
+      message: record.message
+    };
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(web3Body)
+    }).catch(err => {
+      console.error('Web3Forms forwarding error:', err.message);
+    });
+  }
+
   res.json({ success: true, message: 'Message received! Hassan will get back to you soon.' });
 });
 

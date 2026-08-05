@@ -18,6 +18,341 @@ window.toggleAiChatWindow = function(show) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  // ── 🚀 2070 AI OPERATING SYSTEM PREMIUM INITIALIZATION ──
+
+  // 1. Procedural Theme Calibrator & Time-of-Day Adaptation
+  const hour = new Date().getHours();
+  let currentThemeIndex = 0; // Default Gold Obsidian
+  let timeOfDayTheme = "Gold Obsidian";
+
+  // Pick procedural starting theme based on Time of Day
+  if (hour >= 5 && hour < 8) {
+    currentThemeIndex = 2; // Cosmic Violet (Dawn)
+    timeOfDayTheme = "Cosmic Violet";
+  } else if (hour >= 8 && hour < 17) {
+    currentThemeIndex = 1; // Cyber Cyan (Day)
+    timeOfDayTheme = "Cyber Cyan";
+  } else if (hour >= 17 && hour < 20) {
+    currentThemeIndex = 4; // Ruby Amber (Sunset)
+    timeOfDayTheme = "Ruby Amber";
+  } else {
+    currentThemeIndex = 3; // Emerald Matrix (Night)
+    timeOfDayTheme = "Emerald Matrix";
+  }
+
+  // Inject dynamic morphing aurora background elements
+  const auroraMesh = document.createElement('div');
+  auroraMesh.className = 'aurora-bg-mesh';
+  auroraMesh.innerHTML = `
+    <div class="aurora-orb aurora-orb-1"></div>
+    <div class="aurora-orb aurora-orb-2"></div>
+    <div class="aurora-orb aurora-orb-3"></div>
+  `;
+  document.body.prepend(auroraMesh);
+
+  // 2. Returning Visitor Signature Engine
+  let visits = parseInt(localStorage.getItem('apps_gravity_visits') || '0');
+  visits++;
+  localStorage.setItem('apps_gravity_visits', visits);
+  const isReturning = visits > 1;
+
+  // Custom greeting if returning
+  const aiChatMessages = document.getElementById('aiChatMessages');
+  if (aiChatMessages && isReturning) {
+    aiChatMessages.innerHTML = `
+      <div class="chat-msg bot">
+        <div class="msg-bubble">
+          🟢 <strong>NEURAL SYNC SECURE</strong><br>
+          Welcome back, User [ID: AG-2070-${Math.floor(Math.random() * 8999) + 1000}]. Neural link established on visit #${visits}. I am <strong>GravityBot AI</strong>. How can I assist you with App/Web development, free video courses, or project quotes today?
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. Cinematic Boot Sequence Loader Screen
+  const bootOverlay = document.getElementById('aiBootSequence');
+  const bootLogsContainer = document.getElementById('bootLogs');
+  const bootProgressFill = document.getElementById('bootProgressFill');
+
+  const bootLogs = [
+    { text: "⚡ INITIALIZING APPS_GRAVITY_OS CORE...", isSuccess: true },
+    { text: "🛰️ LINKED TO HASSAN CORE GATEWAY SERVER", isSuccess: true },
+    { text: "🧬 NEURAL RECEPTORS CALIBRATING TO v2070.4...", isSuccess: true },
+    { text: isReturning ? `🟢 VISITOR RE-AUTHENTICATED // SECURE VISIT #${visits}` : "🟢 DETECTING VISITOR SIGNATURE... NEW NODE DETECTED", isSuccess: !isReturning },
+    { text: "🗄️ PARSING EMBEDDED KNOWLEDGE BASE [150+ TOPICS]...", isSuccess: true },
+    { text: `🎨 CHROME SPECTRUM SYNCED: ${timeOfDayTheme.toUpperCase()}`, isSuccess: true },
+    { text: "🔒 ENCRYPTING CLIENT ROUTE HANDLERS [CSRF OK]...", isSuccess: true },
+    { text: "✨ ALL QUANTUM SYSTEMS ONLINE. BOOT COMPLETED.", isSuccess: true }
+  ];
+
+  if (bootOverlay && bootLogsContainer && bootProgressFill) {
+    // If returning visitor, speed up boot sequence significantly (10x faster) to maintain speed
+    const stepDelay = isReturning ? 60 : 350;
+    let logIndex = 0;
+
+    function runBootStep() {
+      if (logIndex < bootLogs.length) {
+        const log = bootLogs[logIndex];
+        const line = document.createElement('div');
+        line.className = `boot-log-line ${log.isSuccess ? 'success' : 'warn'}`;
+        line.innerHTML = `<span>[${new Date().toLocaleTimeString().split(' ')[0]}]</span> <span>${log.text}</span>`;
+        bootLogsContainer.appendChild(line);
+        bootLogsContainer.scrollTop = bootLogsContainer.scrollHeight;
+
+        // Progress percentage
+        const progress = Math.round(((logIndex + 1) / bootLogs.length) * 100);
+        bootProgressFill.style.width = `${progress}%`;
+
+        logIndex++;
+        setTimeout(runBootStep, stepDelay);
+      } else {
+        // Complete, fade out overlay
+        setTimeout(() => {
+          bootOverlay.style.opacity = '0';
+          setTimeout(() => {
+            bootOverlay.style.display = 'none';
+          }, 800);
+        }, isReturning ? 150 : 500);
+      }
+    }
+    setTimeout(runBootStep, 100);
+  }
+
+  // Update Status HUD labels
+  const hudThemeLabel = document.getElementById('hudThemeLabel');
+  if (hudThemeLabel) hudThemeLabel.innerText = timeOfDayTheme.toUpperCase();
+
+  // 4. Command Palette Logic
+  const commandPalette = document.getElementById('commandPalette');
+  const paletteInput = document.getElementById('paletteInput');
+  const paletteResults = document.getElementById('paletteResults');
+  const hudCmdPaletteTrigger = document.getElementById('hudCmdPaletteTrigger');
+
+  const commands = [
+    { label: "💬 Ask GravityBot AI Assistant", action: () => window.toggleAiChatWindow(true), icon: "🤖" },
+    { label: "💰 Calculate Instant Project Quote", action: () => document.getElementById('estimator')?.scrollIntoView({ behavior: 'smooth' }), icon: "🧮" },
+    { label: "📚 Explore Free Video Courses", action: () => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' }), icon: "🎓" },
+    { label: "🎨 Toggle OS Visual Theme", action: () => document.getElementById('themeToggleBtn')?.click(), icon: "🔮" },
+    { label: "⚙️ Run Neural Network Diagnostics", action: () => runDiagnostics(), icon: "🔌" },
+    { label: "🌀 Toggle Performance Low-Motion Mode", action: () => toggleLowMotion(), icon: "🚀" },
+    { label: "⭐ Post Client Review or Feedback", action: () => document.getElementById('openReviewModalBtn')?.click(), icon: "📝" },
+    { label: "✉️ Send Message to Hassan Directly", action: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), icon: "📬" },
+    { label: "📱 Preview Featured Pak Advisory App", action: () => document.getElementById('openPakModalBtn')?.click(), icon: "📱" },
+    { label: "⬆️ Scroll to Top of System Screen", action: () => window.scrollTo({ top: 0, behavior: 'smooth' }), icon: "⬆️" }
+  ];
+
+  let selectedPaletteIndex = 0;
+
+  function toggleCommandPalette(forceState) {
+    if (!commandPalette) return;
+    const isShowing = commandPalette.classList.contains('active');
+    const nextState = forceState !== undefined ? forceState : !isShowing;
+
+    if (nextState) {
+      commandPalette.classList.add('active');
+      commandPalette.setAttribute('aria-hidden', 'false');
+      if (paletteInput) {
+        paletteInput.value = '';
+        paletteInput.focus();
+      }
+      renderPaletteResults('');
+    } else {
+      commandPalette.classList.remove('active');
+      commandPalette.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function renderPaletteResults(query) {
+    if (!paletteResults) return;
+    paletteResults.innerHTML = '';
+    const cleanQuery = query.toLowerCase().trim();
+
+    const filtered = commands.filter(cmd => 
+      cmd.label.toLowerCase().includes(cleanQuery)
+    );
+
+    if (filtered.length === 0) {
+      paletteResults.innerHTML = `<div style="color: var(--text-muted); padding: 1.5rem; text-align: center;">No compatible neural commands found. Try 'Ask AI' or 'Theme'.</div>`;
+      return;
+    }
+
+    selectedPaletteIndex = Math.min(selectedPaletteIndex, filtered.length - 1);
+
+    filtered.forEach((cmd, idx) => {
+      const item = document.createElement('div');
+      item.className = `palette-item ${idx === selectedPaletteIndex ? 'selected' : ''}`;
+      item.innerHTML = `
+        <div class="palette-item-left">
+          <span class="palette-item-icon">${cmd.icon}</span>
+          <span>${cmd.label}</span>
+        </div>
+        <span class="palette-item-action">EXECUTE</span>
+      `;
+      item.addEventListener('click', () => {
+        cmd.action();
+        toggleCommandPalette(false);
+      });
+      paletteResults.appendChild(item);
+    });
+  }
+
+  // Keyboard shortcut Ctrl+K / Cmd+K listener
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      toggleCommandPalette();
+    }
+    if (e.key === 'Escape' && commandPalette && commandPalette.classList.contains('active')) {
+      toggleCommandPalette(false);
+    }
+  });
+
+  if (hudCmdPaletteTrigger) {
+    hudCmdPaletteTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleCommandPalette(true);
+    });
+  }
+
+  if (paletteInput) {
+    paletteInput.addEventListener('input', (e) => {
+      selectedPaletteIndex = 0;
+      renderPaletteResults(e.target.value);
+    });
+
+    paletteInput.addEventListener('keydown', (e) => {
+      const activeItems = paletteResults.querySelectorAll('.palette-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedPaletteIndex = (selectedPaletteIndex + 1) % activeItems.length;
+        renderPaletteResults(paletteInput.value);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedPaletteIndex = (selectedPaletteIndex - 1 + activeItems.length) % activeItems.length;
+        renderPaletteResults(paletteInput.value);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const activeItem = activeItems[selectedPaletteIndex];
+        if (activeItem) activeItem.click();
+      }
+    });
+  }
+
+  // Interactive OS Diagnostics trigger
+  function runDiagnostics() {
+    toggleCommandPalette(false);
+    window.toggleAiChatWindow(true);
+    const msgs = document.getElementById('aiChatMessages');
+    if (!msgs) return;
+
+    // Output cool diagnosis log
+    const line = document.createElement('div');
+    line.className = 'chat-msg bot';
+    line.innerHTML = `
+      <div class="msg-bubble" style="font-family: monospace; border: 1px solid var(--gold-primary); background: rgba(0,0,0,0.4); line-height: 1.5;">
+        <span style="color: var(--gold-primary); font-weight: bold;">⚡ SYSTEM RUNTIME DIAGNOSTICS [OK]</span><br>
+        ------------------------------------<br>
+        • OPERATING SYSTEM: v2070.4.AI<br>
+        • KNOWLEDGE LINK: 100% ONLINE<br>
+        • ANOMALIES DETECTED: 0.00%<br>
+        • CORE CODES: FULLY HARDENED<br>
+        • RENDER PIPELINE: GPU COMPATIBLE<br>
+        • CURRENT THEME: ${timeOfDayTheme.toUpperCase()}<br>
+        ------------------------------------<br>
+        STATUS: apps-gravity core is operating at maximum capacity. Ready for new projects.
+      </div>
+    `;
+    msgs.appendChild(line);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // Toggle Low-Motion Mode
+  function toggleLowMotion() {
+    document.body.classList.toggle('low-motion-active');
+    const isActive = document.body.classList.contains('low-motion-active');
+    showNotification(isActive ? "Low-Motion Mode Enabled" : "High-Performance Visuals Restored");
+  }
+
+  function showNotification(msg) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'admin-toast show';
+    alertDiv.style.background = 'var(--gold-primary)';
+    alertDiv.style.color = '#000';
+    alertDiv.style.zIndex = '99999';
+    alertDiv.innerText = `💡 ${msg}`;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => {
+      alertDiv.style.opacity = '0';
+      setTimeout(() => alertDiv.remove(), 400);
+    }, 2500);
+  }
+
+  // Close palette on outer click
+  window.addEventListener('click', (e) => {
+    if (commandPalette && e.target === commandPalette) {
+      toggleCommandPalette(false);
+    }
+  });
+
+  // 5. Magnetic CTA Button Physics
+  const magneticCTAs = document.querySelectorAll('.btn-primary, .btn-outline, .btn-gold-outline, .nav-theme-btn');
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    magneticCTAs.forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const bound = btn.getBoundingClientRect();
+        const btnX = bound.left + bound.width / 2;
+        const btnY = bound.top + bound.height / 2;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        const distanceX = mouseX - btnX;
+        const distanceY = mouseY - btnY;
+
+        // Displace the button slightly towards the cursor (magnetic feel)
+        btn.style.transform = `translate(${distanceX * 0.2}px, ${distanceY * 0.25}px)`;
+      });
+
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translate(0px, 0px)';
+      });
+    });
+  }
+
+  // 6. Interactive Cursor click ripples
+  window.addEventListener('mousedown', (e) => {
+    if (document.body.classList.contains('low-motion-active')) return;
+    const ripple = document.createElement('div');
+    ripple.className = 'particle-ripple';
+    ripple.style.left = `${e.clientX + window.scrollX}px`;
+    ripple.style.top = `${e.clientY + window.scrollY}px`;
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+
+  // 7. Glass card perspective tilt (3D cards)
+  const tiltCards = document.querySelectorAll('.skill-card, .project-card, .course-card, .review-card, .estimator-card');
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    tiltCards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        if (document.body.classList.contains('low-motion-active')) return;
+        const bound = card.getBoundingClientRect();
+        const cardX = bound.left + bound.width / 2;
+        const cardY = bound.top + bound.height / 2;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        const degreeX = (cardY - mouseY) / (bound.height / 2) * 8; // Max 8 degrees tilt
+        const degreeY = (mouseX - cardX) / (bound.width / 2) * 8;
+
+        card.style.transform = `perspective(1000px) rotateX(${degreeX}deg) rotateY(${degreeY}deg) translateY(-2px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
+      });
+    });
+  }
+
   // ── 🛡️ GLOBAL CSRF TOKEN RETRIEVAL ──
   let csrfToken = '';
   async function fetchCSRFToken() {
@@ -136,6 +471,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function animateParticles() {
+      if (document.body.classList.contains('low-motion-active') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setTimeout(animateParticles, 1000); // Check again in 1 second, pausing 60fps loop
+        return;
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
         p.update();
@@ -231,7 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const aiChatWindow = document.getElementById('aiChatWindow');
   const closeAiChatBtn = document.getElementById('closeAiChatBtn');
   const heroChatTriggerBtn = document.getElementById('heroChatTriggerBtn');
-  const aiChatMessages = document.getElementById('aiChatMessages');
+  // Reuse outer-declared aiChatMessages
   const aiChatInput = document.getElementById('aiChatInput');
   const sendAiChatBtn = document.getElementById('sendAiChatBtn');
   const quickChips = document.querySelectorAll('.quick-chip');
@@ -541,7 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCourses();
   loadCoursesFromAPI();
 
-  // ── 🎨 DYNAMIC AI THEME SWITCHER ENGINE ──
+  // ── 🎨 DYNAMIC AI THEME SWITCHER ENGINE (INTEGRATED WITH 2070 OS) ──
   const themes = [
     { id: 'gold', name: 'Gold Obsidian' },
     { id: 'cyan', name: 'Cyber Cyan' },
@@ -550,16 +890,18 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 'ruby', name: 'Ruby Amber' }
   ];
 
-  // Pick a random theme automatically on load/refresh
-  let currentThemeIndex = Math.floor(Math.random() * themes.length);
-
   function applyTheme(index) {
     const theme = themes[index];
     document.body.setAttribute('data-theme', theme.id);
     const themeLabel = document.getElementById('themeNameLabel');
     if (themeLabel) themeLabel.innerText = theme.name;
+
+    // Synchronize with bottom HUD system status label
+    const hudThemeLabelEl = document.getElementById('hudThemeLabel');
+    if (hudThemeLabelEl) hudThemeLabelEl.innerText = theme.name.toUpperCase();
   }
 
+  // Use the computed currentThemeIndex from our time-of-day OS initialization above
   applyTheme(currentThemeIndex);
 
   const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -895,14 +1237,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await response.json();
 
         if (data.success) {
-          // Forward to Web3Forms for email notification (non-blocking, before reset)
-          const formData = new FormData(contactForm);
-          formData.set('name', name);
-          formData.set('email', email);
-          formData.set('service', service);
-          formData.set('message', message);
-          fetch('https://api.web3forms.com/submit', { method: 'POST', body: formData }).catch(() => {});
-
           contactForm.reset();
           if (formSuccess) {
             formSuccess.style.display = 'block';
