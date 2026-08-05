@@ -591,17 +591,36 @@ document.addEventListener('DOMContentLoaded', () => {
     heroChatTriggerBtn.addEventListener('click', () => window.toggleAiChatWindow(true));
   }
 
-  function appendChatMessage(sender, text) {
+  // Conversational context storage and typing mechanics
+  window.aiContext = {};
+  let currentTypingTimer = null;
+  let activeTypingResolve = null;
+
+  const aiQuickPromptsContainer = document.querySelector('.ai-quick-prompts');
+
+  function renderChatSuggestions(suggestionsArray) {
+    if (!aiQuickPromptsContainer || !Array.isArray(suggestionsArray)) return;
+    aiQuickPromptsContainer.innerHTML = '';
+    suggestionsArray.forEach(s => {
+      const btn = document.createElement('button');
+      btn.className = 'quick-chip';
+      btn.setAttribute('data-prompt', s);
+      btn.innerText = s;
+      btn.addEventListener('click', () => {
+        handleUserChatSubmit(s);
+      });
+      aiQuickPromptsContainer.appendChild(btn);
+    });
+  }
+
+  function appendChatMessage(sender, text, suggestions) {
+    if (activeTypingResolve) {
+      activeTypingResolve();
+    }
+
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-msg ${sender}`;
 
-    // FIX: previously this built the message HTML by running markdown replacements
-    // directly on the raw text and dropping the result into innerHTML. Most bot
-    // replies are hardcoded, but some can include externally-sourced text (e.g. a
-    // Wikipedia summary) or, in theory, malformed user text — inserting any of that
-    // as raw HTML is a real XSS vector. Escaping HTML special characters FIRST,
-    // then applying the **bold** / [link](url) / newline formatting on top of the
-    // escaped text, closes that off while keeping the same visual formatting.
     const escapeHtml = (str) => str.replace(/[&<>"']/g, (ch) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[ch]));
@@ -609,8 +628,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let formattedText = escapeHtml(text)
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\[(.*?)\]\((.*?)\)/g, (match, label, url) => {
-        // Only allow http(s) links through as real anchors — anything else
-        // (javascript:, data:, etc.) renders as plain escaped text instead.
         if (/^https?:\/\//i.test(url)) {
           return `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
         }
@@ -618,9 +635,89 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       .replace(/\n/g, '<br>');
 
-    msgDiv.innerHTML = `<div class="msg-bubble">${formattedText}</div>`;
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    msgDiv.appendChild(bubble);
     aiChatMessages.appendChild(msgDiv);
     aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+
+    if (sender === 'user' || document.body.classList.contains('low-motion-active') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      bubble.innerHTML = formattedText;
+      if (suggestions) {
+        renderChatSuggestions(suggestions);
+      }
+      aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+      return;
+    }
+
+    // Typewriter print effect for premium 2070 feel
+    let isSkipped = false;
+    const skipHandler = () => { isSkipped = true; };
+    aiChatMessages.addEventListener('click', skipHandler);
+
+    return new Promise((resolve) => {
+      activeTypingResolve = () => {
+        cleanup();
+        resolve();
+      };
+
+      function cleanup() {
+        if (currentTypingTimer) clearInterval(currentTypingTimer);
+        bubble.innerHTML = formattedText;
+        aiChatMessages.removeEventListener('click', skipHandler);
+        activeTypingResolve = null;
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+        if (suggestions) {
+          renderChatSuggestions(suggestions);
+        }
+      }
+
+      const htmlTokens = [];
+      let tempText = formattedText;
+      while (tempText.length > 0) {
+        if (tempText.startsWith('<')) {
+          const closingIndex = tempText.indexOf('>');
+          if (closingIndex !== -1) {
+            htmlTokens.push(tempText.substring(0, closingIndex + 1));
+            tempText = tempText.substring(closingIndex + 1);
+            continue;
+          }
+        }
+        if (tempText.startsWith('&')) {
+          const closingIndex = tempText.indexOf(';');
+          if (closingIndex !== -1 && closingIndex < 10) {
+            htmlTokens.push(tempText.substring(0, closingIndex + 1));
+            tempText = tempText.substring(closingIndex + 1);
+            continue;
+          }
+        }
+        htmlTokens.push(tempText[0]);
+        tempText = tempText.substring(1);
+      }
+
+      let currentTokenIndex = 0;
+      let typedHTML = '';
+
+      currentTypingTimer = setInterval(() => {
+        if (isSkipped || currentTokenIndex >= htmlTokens.length) {
+          cleanup();
+          return;
+        }
+
+        let token = htmlTokens[currentTokenIndex];
+        typedHTML += token;
+        currentTokenIndex++;
+
+        while (token.startsWith('<') && currentTokenIndex < htmlTokens.length) {
+          token = htmlTokens[currentTokenIndex];
+          typedHTML += token;
+          currentTokenIndex++;
+        }
+
+        bubble.innerHTML = typedHTML;
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+      }, 8);
+    });
   }
 
   async function handleUserChatSubmit(userText) {
@@ -644,13 +741,14 @@ document.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrfToken
         },
-        body: JSON.stringify({ message: text })
+        body: JSON.stringify({ message: text, context: window.aiContext })
       });
       const data = await response.json();
       aiChatMessages.removeChild(typingDiv);
 
       if (data.success && data.reply) {
-        appendChatMessage('bot', data.reply.text);
+        window.aiContext = data.reply.context || window.aiContext;
+        appendChatMessage('bot', data.reply.text, data.reply.suggestions);
       } else {
         const localReply = getLocalFallbackChatReply(text);
         appendChatMessage('bot', localReply);
@@ -659,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (typingDiv.parentNode) aiChatMessages.removeChild(typingDiv);
       // Smart Local Fallback Response Engine
       const localReply = getLocalFallbackChatReply(text);
-      appendChatMessage('bot', localReply);
+      appendChatMessage('bot', localReply, ["🎓 Free Courses", "📱 Pak Advisory App", "💰 Get a Quote"]);
     }
   }
 
@@ -1254,5 +1352,282 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // ── 🎛️ PROCEDURAL AUDIO SYNTHESIZER ENGINE (WEB AUDIO API) ──
+  class CyberAudioSynth {
+    constructor() {
+      this.ctx = null;
+      this.volume = 0.5;
+      this.enabled = true;
+    }
+
+    init() {
+      if (this.ctx) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContextClass();
+      } catch (e) {
+        console.warn("Web Audio API not supported by browser", e);
+      }
+    }
+
+    createGain(duration, startVal, endVal) {
+      if (!this.ctx) return null;
+      const gainNode = this.ctx.createGain();
+      gainNode.gain.setValueAtTime(startVal * this.volume, this.ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(Math.max(endVal, 0.0001) * this.volume, this.ctx.currentTime + duration);
+      return gainNode;
+    }
+
+    playClick() {
+      if (!this.enabled || document.body.classList.contains('low-motion-active')) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.createGain(0.04, 0.3, 0.001);
+      if (!gainNode) return;
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.04);
+
+      osc.connect(gainNode);
+      gainNode.connect(this.ctx.destination);
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.04);
+    }
+
+    playSelect() {
+      if (!this.enabled || document.body.classList.contains('low-motion-active')) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+
+      const now = this.ctx.currentTime;
+      // High pitch double-chirp
+      [580, 840].forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gainNode = this.ctx.createGain();
+        const start = now + idx * 0.04;
+        const duration = 0.06;
+
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.setValueAtTime(0.12 * this.volume, start);
+        gainNode.gain.exponentialRampToValueAtTime(0.0001 * this.volume, start + duration);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, start);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.5, start + duration);
+
+        osc.connect(gainNode);
+        gainNode.connect(this.ctx.destination);
+
+        osc.start(start);
+        osc.stop(start + duration);
+      });
+    }
+
+    playHover() {
+      if (!this.enabled || document.body.classList.contains('low-motion-active')) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.createGain(0.015, 0.03, 0.001);
+      if (!gainNode) return;
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1100, this.ctx.currentTime);
+
+      osc.connect(gainNode);
+      gainNode.connect(this.ctx.destination);
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.015);
+    }
+
+    playBoot() {
+      if (!this.enabled || document.body.classList.contains('low-motion-active')) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+
+      const now = this.ctx.currentTime;
+      const duration = 0.55;
+
+      const osc = this.ctx.createOscillator();
+      const subOsc = this.ctx.createOscillator();
+      const gainNode = this.createGain(duration, 0.15, 0.001);
+      const subGainNode = this.createGain(duration, 0.3, 0.001);
+
+      if (!gainNode || !subGainNode) return;
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(950, now + duration);
+
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(55, now);
+      subOsc.frequency.exponentialRampToValueAtTime(35, now + duration);
+
+      osc.connect(gainNode);
+      gainNode.connect(this.ctx.destination);
+
+      subOsc.connect(subGainNode);
+      subGainNode.connect(this.ctx.destination);
+
+      osc.start();
+      subOsc.start();
+      osc.stop(now + duration);
+      subOsc.stop(now + duration);
+    }
+  }
+
+  const cyberSynth = new CyberAudioSynth();
+
+  // Attach interface sounds on user clicks & hovers
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, button, .radio-card, .check-item, .quick-chip, .filter-chip')) {
+      cyberSynth.playSelect();
+    } else {
+      cyberSynth.playClick();
+    }
+  });
+
+  // Debounced subtle hover sound ticks
+  let hoverSoundTimeout = null;
+  document.addEventListener('mouseover', (e) => {
+    if (e.target.closest('a, button, .radio-card, .check-item, .quick-chip, .filter-chip')) {
+      if (hoverSoundTimeout) return;
+      cyberSynth.playHover();
+      hoverSoundTimeout = setTimeout(() => {
+        hoverSoundTimeout = null;
+      }, 150);
+    }
+  });
+
+  // Boot audio trigger
+  setTimeout(() => {
+    cyberSynth.playBoot();
+  }, 100);
+
+
+  // ── 🎛️ CONTROL CENTER DRAWER WIRING ──
+  const hudControlCenterTrigger = document.getElementById('hudControlCenterTrigger');
+  const controlCenterDrawer = document.getElementById('controlCenterDrawer');
+  const closeControlCenterBtn = document.getElementById('closeControlCenterBtn');
+
+  const ccCpuValue = document.getElementById('ccCpuValue');
+  const ccCpuBar = document.getElementById('ccCpuBar');
+  const ccMemValue = document.getElementById('ccMemValue');
+  const ccMemBar = document.getElementById('ccMemBar');
+  const ccPingValue = document.getElementById('ccPingValue');
+  const ccPingBar = document.getElementById('ccPingBar');
+
+  const ccLowMotionSwitch = document.getElementById('ccLowMotionSwitch');
+  const ccAudioSwitch = document.getElementById('ccAudioSwitch');
+  const ccVolumeSlider = document.getElementById('ccVolumeSlider');
+  const ccVolumeValue = document.getElementById('ccVolumeValue');
+
+  const ccCmdPaletteBtn = document.getElementById('ccCmdPaletteBtn');
+  const ccDiagnosticsBtn = document.getElementById('ccDiagnosticsBtn');
+
+  function toggleControlCenter(show) {
+    if (!controlCenterDrawer) return;
+    const isShowing = controlCenterDrawer.classList.contains('active');
+    const nextState = show !== undefined ? show : !isShowing;
+
+    if (nextState) {
+      controlCenterDrawer.classList.add('active');
+      controlCenterDrawer.setAttribute('aria-hidden', 'false');
+      if (ccLowMotionSwitch) {
+        ccLowMotionSwitch.checked = document.body.classList.contains('low-motion-active');
+      }
+    } else {
+      controlCenterDrawer.classList.remove('active');
+      controlCenterDrawer.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  if (hudControlCenterTrigger) {
+    hudControlCenterTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleControlCenter();
+    });
+  }
+
+  if (closeControlCenterBtn) {
+    closeControlCenterBtn.addEventListener('click', () => {
+      toggleControlCenter(false);
+    });
+  }
+
+  window.addEventListener('click', (e) => {
+    if (controlCenterDrawer && controlCenterDrawer.classList.contains('active') && !controlCenterDrawer.contains(e.target) && e.target !== hudControlCenterTrigger) {
+      toggleControlCenter(false);
+    }
+  });
+
+  if (ccLowMotionSwitch) {
+    ccLowMotionSwitch.addEventListener('change', () => {
+      const isChecked = ccLowMotionSwitch.checked;
+      if (isChecked) {
+        document.body.classList.add('low-motion-active');
+      } else {
+        document.body.classList.remove('low-motion-active');
+      }
+      showNotification(isChecked ? "Low-Motion Mode Enabled" : "High-Performance Visuals Restored");
+    });
+  }
+
+  if (ccAudioSwitch) {
+    ccAudioSwitch.addEventListener('change', () => {
+      cyberSynth.enabled = ccAudioSwitch.checked;
+      showNotification(cyberSynth.enabled ? "UI Interface Audio Enabled" : "UI Interface Audio Muted");
+    });
+  }
+
+  if (ccVolumeSlider) {
+    ccVolumeSlider.addEventListener('input', (e) => {
+      const vol = parseInt(e.target.value);
+      cyberSynth.volume = vol / 100;
+      if (ccVolumeValue) ccVolumeValue.innerText = `${vol}%`;
+    });
+  }
+
+  if (ccCmdPaletteBtn) {
+    ccCmdPaletteBtn.addEventListener('click', () => {
+      toggleControlCenter(false);
+      toggleCommandPalette(true);
+    });
+  }
+
+  if (ccDiagnosticsBtn) {
+    ccDiagnosticsBtn.addEventListener('click', () => {
+      toggleControlCenter(false);
+      runDiagnostics();
+    });
+  }
+
+  setInterval(() => {
+    if (controlCenterDrawer && controlCenterDrawer.classList.contains('active')) {
+      const cpu = Math.floor(Math.random() * 8) + 26;
+      const mem = (Math.random() * 1.5 + 17.5).toFixed(1);
+      const ping = Math.floor(Math.random() * 6) + 11;
+
+      if (ccCpuValue) ccCpuValue.innerText = `${cpu}%`;
+      if (ccCpuBar) ccCpuBar.style.width = `${cpu}%`;
+
+      if (ccMemValue) ccMemValue.innerText = `${mem} MB`;
+      if (ccMemBar) ccMemBar.style.width = `${Math.round((parseFloat(mem) / 40) * 100)}%`;
+
+      if (ccPingValue) ccPingValue.innerText = `${ping}ms`;
+      if (ccPingBar) ccPingBar.style.width = `${Math.round((ping / 50) * 100)}%`;
+    }
+  }, 1200);
 });
 

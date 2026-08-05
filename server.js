@@ -552,130 +552,183 @@ function containsWord(haystack, phrase) {
 }
 
 // ── 🤖 AI CHATBOT ENGINE LOGIC (UPGRADED INTELLIGENCE & CONVERSATION) ──
-async function getAiResponse(userMessage) {
+async function getAiResponse(userMessage, context = {}) {
   const rawMsg = userMessage || '';
   const msg = rawMsg.toLowerCase().trim();
 
+  // Parse candidate name
+  const namePattern = /\b(?:my name is|call me|i am|i'm)\s+([a-zA-Z\s]{2,20})/i;
+  const nameMatch = rawMsg.match(namePattern);
+  if (nameMatch) {
+    const candidate = nameMatch[1].trim().split(' ')[0];
+    const ignoreList = ["fine", "good", "great", "ok", "a", "an", "the", "developer", "student", "biller", "coder", "learning", "trying", "here", "just", "so", "ready", "happy"];
+    if (candidate && !ignoreList.includes(candidate.toLowerCase()) && candidate.length > 1) {
+      context.name = candidate.charAt(0).toUpperCase() + candidate.slice(1).toLowerCase();
+    }
+  }
+
+  const nameSuffix = context.name ? `, ${context.name}` : "";
+  const namePrefix = context.name ? `**${context.name}**, ` : "";
+
+  let result = null;
+
   // 1. GREETINGS & SMALL TALK
   if (/^(hi|hello|hey|heyy|salam|aOA|good morning|good afternoon|good evening|yo|sup|greetings)\b/i.test(msg)) {
-    return {
-      text: "👋 **Hello and welcome!** I'm **GravityBot AI**, the official virtual assistant for **Apps Gravity**, founded by **Hassan**.\n\nI'm doing great and ready to assist you! How can I help today?\n\n• 🎓 **Free Medical Billing Video Course**\n• 📱 **Mobile App Dev (Pak Advisory App)**\n• 🌐 **Web Development & Cost Estimates**\n• 📬 **Contacting Hassan directly**",
+    result = {
+      text: `👋 **Hello${nameSuffix} and welcome!** I'm **GravityBot AI**, the official virtual assistant for **Apps Gravity**, founded by **Hassan**.\n\nI'm doing great and ready to assist you! How can I help today?\n\n• 🎓 **Free Medical Billing Video Course**\n• 📱 **Mobile App Dev (Pak Advisory App)**\n• 🌐 **Web Development & Cost Estimates**\n• 📬 **Contacting Hassan directly**`,
       action: "greetings"
     };
   }
 
-  if (msg.includes('how are you') || msg.includes('how r u') || msg.includes('how do you do')) {
-    return {
-      text: "😊 I'm feeling great and running at full speed! Thank you for asking. How can I assist you with **Apps Gravity** projects or our free **Medical Billing Course** today?",
+  else if (msg.includes('how are you') || msg.includes('how r u') || msg.includes('how do you do')) {
+    result = {
+      text: `😊 I'm feeling great and running at full speed! Thank you for asking${nameSuffix}. How can I assist you with **Apps Gravity** projects or our free **Medical Billing Course** today?`,
       action: "chitchat"
     };
   }
 
-  if (msg.includes('who are you') || msg.includes('what are you') || msg.includes('who made you') || msg.includes('who created you') || msg.includes('your name')) {
-    return {
-      text: "🤖 I am **GravityBot AI**, an intelligent conversational assistant created by **Hassan** (Founder of Apps Gravity). I help visitors explore custom mobile/web development services, get live project price estimates, and access free video courses!",
+  else if (msg.includes('who are you') || msg.includes('what are you') || msg.includes('who made you') || msg.includes('who created you') || msg.includes('your name')) {
+    result = {
+      text: `🤖 I am **GravityBot AI**, an intelligent conversational assistant created by **Hassan** (Founder of Apps Gravity). I help visitors${nameSuffix ? ` like you, ${context.name},` : ""} explore custom mobile/web development services, get live project price estimates, and access free video courses!`,
       action: "about_bot"
     };
   }
 
-  if (msg.includes('tell me a joke') || msg.includes('say something funny') || msg.includes('joke')) {
-    return {
-      text: "😄 Why do programmers prefer dark mode?\n\nBecause light attracts bugs! 🐛✨\n\nSpeaking of clean code, how can Hassan help build your next app or website today?",
+  else if (msg.includes('tell me a joke') || msg.includes('say something funny') || msg.includes('joke')) {
+    result = {
+      text: `😄 Why do programmers prefer dark mode?\n\nBecause light attracts bugs! 🐛✨\n\nSpeaking of clean code, how can Hassan help build your next app or website today?`,
       action: "joke"
     };
   }
 
-  if (msg.includes('thank') || msg.includes('thx') || msg.includes('thanks') || msg.includes('great job') || msg.includes('awesome')) {
-    return {
-      text: "🌟 You're very welcome! It's my pleasure to help. Feel free to ask any more questions about our courses, mobile app development, or website quotes!",
+  else if (msg.includes('thank') || msg.includes('thx') || msg.includes('thanks') || msg.includes('great job') || msg.includes('awesome')) {
+    result = {
+      text: `🌟 You're very welcome${nameSuffix}! It's my absolute pleasure to help. Feel free to ask any more questions about our courses, mobile app development, or website quotes!`,
       action: "gratitude"
     };
   }
 
-  if (msg.includes('bye') || msg.includes('goodbye') || msg.includes('see ya') || msg.includes('cya')) {
-    return {
-      text: "👋 Goodbye! Have a fantastic day! If you ever need app/web dev services or free courses, **Apps Gravity** is always here for you.",
+  else if (msg.includes('bye') || msg.includes('goodbye') || msg.includes('see ya') || msg.includes('cya')) {
+    result = {
+      text: `👋 Goodbye${nameSuffix}! Have a fantastic day! If you ever need app/web dev services or free courses, **Apps Gravity** is always here for you.`,
       action: "farewell"
     };
   }
 
   // 2. MEDICAL BILLING COURSE & LEARNING
-  if (msg.includes('medical billing') || msg.includes('billing course') || msg.includes('drive link') || msg.includes('drive folder') || msg.includes('google drive') || msg.includes('watch course') || msg.includes('download course')) {
-    return {
-      text: "🎓 **Medical Billing Complete Video Course** is 100% free!\n\nYou can stream or download all video lessons securely via Google Drive:\n\n👉 [Access Secure Google Drive Folder](https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link)\n\n**Course Highlights:**\n• Claim Submission & Verification\n• ICD-10 & CPT Coding Essentials\n• Revenue Cycle Management (RCM)\n• Real-world Billing Procedures",
+  else if (msg.includes('medical billing') || msg.includes('billing course') || msg.includes('drive link') || msg.includes('drive folder') || msg.includes('google drive') || msg.includes('watch course') || msg.includes('download course')) {
+    result = {
+      text: `🎓 ${namePrefix}the **Medical Billing Complete Video Course** is 100% free!\n\nYou can stream or download all video lessons securely via Google Drive:\n\n👉 [Access Secure Google Drive Folder](https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link)\n\n**Course Highlights:**\n• Claim Submission & Verification\n• ICD-10 & CPT Coding Essentials\n• Revenue Cycle Management (RCM)\n• Real-world Billing Procedures`,
       action: "courses"
     };
   }
 
-  if (msg.includes('what is medical billing') || msg.includes('explain medical billing') || msg.includes('cpt') || msg.includes('icd') || msg.includes('rcm')) {
-    return {
-      text: "💡 **Medical Billing Breakdown:**\n\nMedical billing is the process of submitting and following up on claims with health insurance companies in order to receive payment for services rendered by healthcare providers.\n\n• **ICD-10**: Diagnosis codes defining the patient's condition.\n• **CPT**: Procedure codes defining treatments provided.\n• **RCM**: Revenue Cycle Management tracking financial workflows.\n\nLearn all of this step-by-step in Hassan's free video course on Google Drive!",
+  else if (msg.includes('what is medical billing') || msg.includes('explain medical billing') || msg.includes('cpt') || msg.includes('icd') || msg.includes('rcm')) {
+    result = {
+      text: `💡 **Medical Billing Breakdown${nameSuffix ? ` for ${context.name}` : ""}:**\n\nMedical billing is the process of submitting and following up on claims with health insurance companies in order to receive payment for services rendered by healthcare providers.\n\n• **ICD-10**: Diagnosis codes defining the patient's condition.\n• **CPT**: Procedure codes defining treatments provided.\n• **RCM**: Revenue Cycle Management tracking financial workflows.\n\nLearn all of this step-by-step in Hassan's free video course on Google Drive!`,
       action: "medical_info"
     };
   }
 
-  if (msg.includes('is it free') || msg.includes('course cost') || msg.includes('course fee') || msg.includes('payment for course')) {
-    return {
-      text: "🎁 Yes! The **Medical Billing Video Course** provided by Hassan is **100% FREE** with no hidden fees or paywalls. You get full access to all video modules on Google Drive.",
+  else if (msg.includes('is it free') || msg.includes('course cost') || msg.includes('course fee') || msg.includes('payment for course')) {
+    result = {
+      text: `🎁 Yes${nameSuffix}! The **Medical Billing Video Course** provided by Hassan is **100% FREE** with no hidden fees or paywalls. You get full access to all video modules on Google Drive.`,
       action: "courses"
     };
   }
 
   // 3. PAK ADVISORY APP & MOBILE DEV
-  if (msg.includes('pak advisory') || containsWord(msg, 'app') || containsWord(msg, 'apps') || msg.includes('mobile') || msg.includes('android') || msg.includes('ios') || msg.includes('flutter')) {
-    return {
-      text: "📱 **Apps Gravity Mobile App Development:**\n\nHassan specializes in building native & cross-platform mobile apps (iOS & Android). Our flagship featured project is **Pak Advisory App** — an intuitive advisory & expert guidance platform built for users across Pakistan!\n\nWould you like Hassan to build a custom mobile app for your startup or business?",
+  else if (msg.includes('pak advisory') || containsWord(msg, 'app') || containsWord(msg, 'apps') || msg.includes('mobile') || msg.includes('android') || msg.includes('ios') || msg.includes('flutter')) {
+    result = {
+      text: `📱 **Apps Gravity Mobile App Development:**\n\nHassan specializes in building native & cross-platform mobile apps (iOS & Android). Our flagship featured project is **Pak Advisory App** — an intuitive advisory & expert guidance platform built for users across Pakistan!\n\n${namePrefix}would you like Hassan to build a custom mobile app for your startup or business?`,
       action: "portfolio"
     };
   }
 
   // 4. WEB DEVELOPMENT & ESTIMATION
-  if (msg.includes('web') || msg.includes('website') || msg.includes('full stack') || msg.includes('frontend') || msg.includes('backend') || msg.includes('express') || msg.includes('react')) {
-    return {
-      text: "🌐 **Apps Gravity Web Engineering:**\n\nWe design & code luxury, ultra-fast, responsive web platforms using modern HTML/CSS, Vanilla JS, Express backends, and security-hardened architectures.\n\nWant to estimate your project cost? Scroll to our interactive **Project Estimator** calculator on the website!",
+  else if (msg.includes('web') || msg.includes('website') || msg.includes('full stack') || msg.includes('frontend') || msg.includes('backend') || msg.includes('express') || msg.includes('react')) {
+    result = {
+      text: `🌐 **Apps Gravity Web Engineering:**\n\nWe design & code luxury, ultra-fast, responsive web platforms using modern HTML/CSS, Vanilla JS, Express backends, and security-hardened architectures.\n\n${namePrefix}want to estimate your project cost? Scroll to our interactive **Project Estimator** calculator on the website!`,
       action: "calculator"
     };
   }
 
-  if (msg.includes('price') || containsWord(msg, 'cost') || containsWord(msg, 'rate') || msg.includes('estimate') || msg.includes('how much') || msg.includes('quote')) {
-    return {
-      text: "💰 **Instant Cost Estimation:**\n\nOur project quotes are transparent and tailored to your tech stack:\n• **Web Apps**: Starting around ~$499\n• **Mobile Apps**: Starting around ~$799\n• **Full-Stack Ecosystems**: Starting around ~$1199\n\nUse our live **Project Estimator** on this page to build your custom feature breakdown!",
+  else if (msg.includes('price') || containsWord(msg, 'cost') || containsWord(msg, 'rate') || msg.includes('estimate') || msg.includes('how much') || msg.includes('quote')) {
+    result = {
+      text: `💰 **Instant Cost Estimation${nameSuffix ? ` for ${context.name}` : ""}:**\n\nOur project quotes are transparent and tailored to your tech stack:\n• **Web Apps**: Starting around ~$499\n• **Mobile Apps**: Starting around ~$799\n• **Full-Stack Ecosystems**: Starting around ~$1199\n\nUse our live **Project Estimator** on this page to build your custom feature breakdown!`,
       action: "calculator"
     };
   }
 
   // 5. ABOUT HASSAN & CONTACT
-  if (msg.includes('hassan') || msg.includes('who is hassan') || msg.includes('contact') || msg.includes('email') || msg.includes('reach') || msg.includes('hire') || msg.includes('location')) {
-    return {
-      text: "📬 **Contact Hassan (Founder & Developer):**\n\n• **Email**: mahadhassanlal@gmail.com\n• **GitHub**: [@mahad1117a](https://github.com/mahad1117a)\n• **Location**: Pakistan (Serving clients worldwide)\n• **Services**: Mobile App Dev, Web Dev, API Security & Free Courses\n\nYou can also submit your inquiry directly using the contact form at the bottom of the page!",
+  else if (msg.includes('hassan') || msg.includes('who is hassan') || msg.includes('contact') || msg.includes('email') || msg.includes('reach') || msg.includes('hire') || msg.includes('location')) {
+    result = {
+      text: `📬 **Contact Hassan (Founder & Developer):**\n\n• **Email**: mahadhassanlal@gmail.com\n• **GitHub**: [@mahad1117a](https://github.com/mahad1117a)\n• **Location**: Pakistan (Serving clients worldwide)\n• **Services**: Mobile App Dev, Web Dev, API Security & Free Courses\n\nYou can also submit your inquiry directly using the contact form at the bottom of the page!`,
       action: "contact"
     };
   }
 
   // 6. REQUESTING NEW COURSES
-  // FIX: this previously also matched bare "python" or "learning" anywhere in the
-  // message, which meant a genuine question like "tell me about python" was
-  // hijacked into a "request a course" reply instead of reaching the real answer
-  // now available in the knowledge base below. Narrowed to phrasing that's
-  // actually about requesting a course.
-  if (msg.includes('request course') || msg.includes('request a course') || msg.includes('other course') || msg.includes('new course') || msg.includes('course request')) {
-    return {
-      text: "📚 Need a course on programming, web dev, or another topic? Click the **'Request a Course'** button in the Free Courses section, and Hassan will upload it for free!",
+  else if (msg.includes('request course') || msg.includes('request a course') || msg.includes('other course') || msg.includes('new course') || msg.includes('course request')) {
+    result = {
+      text: `📚 ${namePrefix}need a course on programming, web dev, or another topic? Click the **'Request a Course'** button in the Free Courses section, and Hassan will upload it for free!`,
       action: "courses"
     };
   }
 
-  // 7. STRUCTURED KNOWLEDGE BASE — web dev, mobile dev, programming, cybersecurity,
-  // data/analytics, AI, medical billing, business/freelancing, and general tech topics.
-  // Checked only after the business-critical intents above, so those always win.
-  const kbMatch = searchAllKnowledge(rawMsg);
-  if (kbMatch) {
-    return { text: kbMatch.answer, action: "knowledge_base", category: kbMatch.category };
+  // Check static/custom knowledge bases
+  if (!result) {
+    const kbMatch = searchAllKnowledge(rawMsg);
+    if (kbMatch) {
+      result = {
+        text: kbMatch.answer,
+        action: "knowledge_base",
+        category: kbMatch.category
+      };
+    }
   }
 
-  // 8. NOTHING MATCHED — GOOGLE SEARCH LINK FALLBACK (+ a Wikipedia quick answer
-  // when one is available)
-  return await fetchWebSearchResults(rawMsg);
+  // Google/Wiki fallback
+  if (!result) {
+    result = await fetchWebSearchResults(rawMsg);
+  }
+
+  // Assign follow-up suggestions dynamically
+  const suggestionsMap = {
+    greetings: ["🎓 Free Courses", "📱 Pak Advisory App", "💰 Get a Web Quote", "📬 Contact Hassan"],
+    chitchat: ["🤖 Who are you?", "😄 Tell a joke", "🎓 Free Courses", "📬 Contact Hassan"],
+    about_bot: ["🔌 Run Diagnostics", "🎓 Free Courses", "💰 Get a Web Quote"],
+    joke: ["😄 Another joke", "📱 Pak Advisory App", "💰 Get a Quote"],
+    gratitude: ["🎓 Free Courses", "💰 Get a Quote", "📬 Contact Hassan"],
+    farewell: ["🎓 Free Courses", "💰 Get a Quote", "📬 Contact Hassan"],
+    courses: ["💡 What is CPT?", "🎁 Is it free?", "📂 Drive Folder", "📬 Contact Hassan"],
+    medical_info: ["🎓 Start Course", "🎁 Is it free?", "📂 Drive Folder", "📬 Contact Hassan"],
+    portfolio: ["📱 View Pak Advisory", "💰 Get a Quote", "📬 Contact Hassan"],
+    calculator: ["🧮 Project Estimator", "💰 Get a Quote", "📬 Contact Hassan"],
+    contact: ["📬 Email Hassan", "🌐 Web Dev Info", "🎓 Free Courses"]
+  };
+
+  let suggestions = suggestionsMap[result.action] || ["🎓 Free Courses", "📱 Pak Advisory App", "💰 Get a Quote", "📬 Contact Hassan"];
+
+  if (result.action === "knowledge_base") {
+    if (result.category === "Web Development") {
+      suggestions = ["💰 Get a Web Quote", "🧮 Project Estimator", "🎓 Free Courses"];
+    } else if (result.category === "Mobile Development") {
+      suggestions = ["📱 Pak Advisory App", "🧮 Project Estimator", "🎓 Free Courses"];
+    } else if (result.category === "Medical Billing") {
+      suggestions = ["🎓 Medical Billing Course", "💡 What is CPT?", "🎁 Is it free?"];
+    }
+  }
+
+  // Keep track of context.lastTopic
+  context.lastTopic = result.action;
+
+  return {
+    text: result.text,
+    action: result.action,
+    suggestions: suggestions,
+    context: context
+  };
 }
 
 // ── REST API ROUTES ──
@@ -699,7 +752,8 @@ app.post('/api/chat', chatLimiter, verifyCSRFToken, async (req, res) => {
     return res.status(400).json({ error: "Valid message text is required." });
   }
   const cleanMessage = sanitizeInput(rawMessage.slice(0, 500));
-  const reply = await getAiResponse(cleanMessage);
+  const clientContext = req.body.context || {};
+  const reply = await getAiResponse(cleanMessage, clientContext);
   cappedPush(chatHistoryStore, {
     id: Date.now(),
     message: cleanMessage,

@@ -714,7 +714,82 @@
     <div class="hud-item"><span class="hud-pulse"></span> SYSTEM: <span id="hudSystemStatus">OS_2070_ACTIVE</span></div>
     <div class="hud-item">GATEWAY: <span id="hudGateway">NEURAL_SYNC_100</span></div>
     <div class="hud-item">THEME: <span id="hudThemeLabel">PROCEDURAL</span></div>
+    <button class="hud-btn" id="hudControlCenterTrigger" title="Open OS 2070 Control Center">🎛️ SYSTEM_CC</button>
     <button class="hud-btn" id="hudCmdPaletteTrigger" title="Open Command Palette (Ctrl+K)">⚡ COM_PALETTE [Ctrl+K]</button>
+  </div>
+
+  <!-- ── 🎛️ OS 2070 DIAGNOSTICS & CONTROL CENTER DRAWER ── -->
+  <div class="cc-drawer" id="controlCenterDrawer" aria-hidden="true" role="dialog">
+    <div class="cc-drawer-header">
+      <div class="cc-drawer-title">
+        <span class="system-pulse-dot"></span>
+        <h3>SYSTEM_CONTROL_CENTER</h3>
+      </div>
+      <button class="cc-drawer-close" id="closeControlCenterBtn">&times;</button>
+    </div>
+    <div class="cc-drawer-body">
+      <!-- Diagnostics Panel -->
+      <div class="cc-panel-section">
+        <h4 class="cc-section-label">⚡ SYSTEM_DIAGNOSTICS</h4>
+        <div class="cc-metric">
+          <div class="cc-metric-info">
+            <span>NEURAL_NET_CPU</span>
+            <span id="ccCpuValue">31%</span>
+          </div>
+          <div class="cc-metric-bar"><div class="cc-metric-fill" id="ccCpuBar" style="width: 31%;"></div></div>
+        </div>
+        <div class="cc-metric">
+          <div class="cc-metric-info">
+            <span>HEAP_MEM_ALLOC</span>
+            <span id="ccMemValue">18.4 MB</span>
+          </div>
+          <div class="cc-metric-bar"><div class="cc-metric-fill" id="ccMemBar" style="width: 42%;"></div></div>
+        </div>
+        <div class="cc-metric">
+          <div class="cc-metric-info">
+            <span>GATEWAY_PING</span>
+            <span id="ccPingValue">14ms</span>
+          </div>
+          <div class="cc-metric-bar"><div class="cc-metric-fill" id="ccPingBar" style="width: 15%;"></div></div>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div class="cc-panel-section">
+        <h4 class="cc-section-label">⚙️ OS_CALIBRATION</h4>
+
+        <div class="cc-control-row">
+          <span>Low-Motion Mode</span>
+          <label class="cc-switch">
+            <input type="checkbox" id="ccLowMotionSwitch" />
+            <span class="cc-switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="cc-control-row">
+          <span>Audio Diagnostics</span>
+          <label class="cc-switch">
+            <input type="checkbox" id="ccAudioSwitch" checked />
+            <span class="cc-switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="cc-control-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; width: 100%;">
+            <span>Master Volume</span>
+            <span id="ccVolumeValue">50%</span>
+          </div>
+          <input type="range" id="ccVolumeSlider" min="0" max="100" value="50" style="width: 100%; accent-color: var(--gold-primary);" />
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="cc-panel-section">
+        <h4 class="cc-section-label">⚡ QUICK_ACTIONS</h4>
+        <button class="btn btn-gold-outline sm full" id="ccCmdPaletteBtn" style="margin-bottom: 0.5rem; justify-content: center;">⌨️ Command Palette [Ctrl+K]</button>
+        <button class="btn btn-outline sm full" id="ccDiagnosticsBtn" style="justify-content: center;">🔌 Force Neural Diagnosis</button>
+      </div>
+    </div>
   </div>
 
   <!-- ── ⌨️ FLOATING COMMAND PALETTE ── -->
