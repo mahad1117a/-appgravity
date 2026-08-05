@@ -27,7 +27,7 @@
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <a href="#home" class="nav-logo" id="navLogo">
-        <img src="logo.jpg" alt="Apps Gravity Logo" class="logo-img" />
+        <img src="logo.jpg" alt="Apps Gravity Logo" class="logo-img" decoding="async" fetchpriority="high" />
         <span class="logo-text">Apps <span class="gold">Gravity</span></span>
       </a>
       <ul class="nav-links" id="navLinks">
@@ -530,13 +530,8 @@
           </div>
         </div>
 
-        <!-- ── LIVE EMAIL CONTACT FORM WITH WEB3FORMS ── -->
-        <form class="contact-form" data-aos="fade-left" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
-          <!-- Web3Forms Access Key -->
-          <input type="hidden" name="access_key" value="1ee1b825-470e-4478-8d9a-4fb0d7811863" />
-          <input type="hidden" name="subject" value="New Contact Form Submission from Apps Gravity" />
-          <input type="hidden" name="from_name" value="Apps Gravity Website" />
-
+        <!-- ── LIVE EMAIL CONTACT FORM SECURED VIA SERVER-SIDE RELAY ── -->
+        <form class="contact-form" data-aos="fade-left" id="contactForm" method="POST">
           <div class="form-group">
             <label for="nameInput">Your Name</label>
             <input type="text" name="name" id="nameInput" placeholder="John Doe" required />
@@ -576,7 +571,7 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-logo">
-        <img src="logo.jpg" alt="Apps Gravity" class="logo-img sm" />
+        <img src="logo.jpg" alt="Apps Gravity" class="logo-img sm" decoding="async" loading="lazy" />
         <span>Apps <span class="gold">Gravity</span></span>
       </div>
       <p class="footer-copy">© 2026 Apps Gravity — Hassan. Crafted with ❤️ in Pakistan.</p>
@@ -711,6 +706,50 @@
         </div>
         <button type="submit" class="btn btn-primary full">Post Review</button>
       </form>
+    </div>
+  </div>
+
+  <!-- ── 📊 SYSTEM STATUS HUD TERMINAL ── -->
+  <div class="system-hud-bar" id="systemHudBar">
+    <div class="hud-item"><span class="hud-pulse"></span> SYSTEM: <span id="hudSystemStatus">OS_2070_ACTIVE</span></div>
+    <div class="hud-item">GATEWAY: <span id="hudGateway">NEURAL_SYNC_100</span></div>
+    <div class="hud-item">THEME: <span id="hudThemeLabel">PROCEDURAL</span></div>
+    <button class="hud-btn" id="hudCmdPaletteTrigger" title="Open Command Palette (Ctrl+K)">⚡ COM_PALETTE [Ctrl+K]</button>
+  </div>
+
+  <!-- ── ⌨️ FLOATING COMMAND PALETTE ── -->
+  <div id="commandPalette" class="palette-overlay" aria-hidden="true" role="dialog">
+    <div class="palette-card">
+      <div class="palette-header">
+        <svg class="palette-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="paletteInput" placeholder="Enter command or search (e.g. '> Ask AI', '> Theme', 'Medical Billing')..." autocomplete="off" />
+        <span class="palette-esc-badge">ESC</span>
+      </div>
+      <div class="palette-results" id="paletteResults">
+        <!-- Results rendered dynamically via JS -->
+      </div>
+      <div class="palette-footer">
+        <span>Use <kbd>↑</kbd> <kbd>↓</kbd> to navigate, <kbd>Enter</kbd> to select</span>
+        <span>Ctrl+K to toggle</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 🚀 FUTURISTIC SYSTEM BOOT SEQUENCE LOADER ── -->
+  <div id="aiBootSequence" class="boot-overlay">
+    <div class="boot-terminal">
+      <div class="boot-header">
+        <div class="boot-dots">
+          <span class="boot-dot red"></span>
+          <span class="boot-dot yellow"></span>
+          <span class="boot-dot green"></span>
+        </div>
+        <span>APPS_GRAVITY_CORE_v2070.4 // SYSTEM INITIALIZATION</span>
+      </div>
+      <div class="boot-logs" id="bootLogs"></div>
+      <div class="boot-progress-bar">
+        <div class="boot-progress-fill" id="bootProgressFill"></div>
+      </div>
     </div>
   </div>
 
