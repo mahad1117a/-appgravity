@@ -1,1 +1,5 @@
+
+> apps-gravity-backend@1.0.0 start
+> node server.js
+
 🔒 Enterprise Secure Apps Gravity Server running on http://localhost:3000
