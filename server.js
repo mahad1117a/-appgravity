@@ -357,8 +357,12 @@ app.use(['/admin.html', '/api/admin'], (req, res, next) => {
   next();
 });
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname)));
+// Serve static frontend files with high-performance caching
+app.use(express.static(path.join(__dirname), {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true
+}));
 
 // ── PERSISTENT DATA STORE ──
 const store = loadStore();

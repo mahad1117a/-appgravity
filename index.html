@@ -218,6 +218,40 @@
           <span class="skill-percent">95%</span>
         </div>
       </div>
+
+      <!-- ── 🎯 INTERACTIVE SKILL & PROJECT PATH FINDER ── -->
+      <div class="quiz-widget-card" id="skillQuizWidget" data-aos="fade-up">
+        <div class="quiz-header">
+          <div class="quiz-badge">✨ Interactive Project &amp; Skill Quiz</div>
+          <h3>Find Your Ideal Tech Path with Apps Gravity</h3>
+          <p>Select what best describes your current goal for an instant recommendation:</p>
+        </div>
+        <div class="quiz-options-grid">
+          <button class="quiz-opt-btn" data-goal="app">
+            <span class="quiz-icon">📱</span>
+            <strong>Need a Custom Mobile App</strong>
+            <small>iOS &amp; Android Apps tailored to your business</small>
+          </button>
+          <button class="quiz-opt-btn" data-goal="web">
+            <span class="quiz-icon">🌐</span>
+            <strong>Need a Web Platform / Website</strong>
+            <small>Responsive modern site, web app or landing page</small>
+          </button>
+          <button class="quiz-opt-btn" data-goal="medical">
+            <span class="quiz-icon">🎓</span>
+            <strong>Learn Medical Billing Free</strong>
+            <small>100% Free Video Course on Google Drive</small>
+          </button>
+          <button class="quiz-opt-btn" data-goal="analytics">
+            <span class="quiz-icon">📊</span>
+            <strong>Master Data Analytics &amp; BI</strong>
+            <small>178 Free Lessons &amp; Downloadable Files</small>
+          </button>
+        </div>
+        <div class="quiz-result-panel" id="quizResultPanel" style="display: none;">
+          <div class="quiz-result-content" id="quizResultContent"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -599,7 +633,10 @@
           <small>Apps Gravity Assistant • Online</small>
         </div>
       </div>
-      <button class="ai-close-btn" id="closeAiChatBtn">&times;</button>
+      <div class="ai-header-actions">
+        <button class="ai-voice-btn" id="aiVoiceToggleBtn" title="Toggle AI Voice Readout">🔇 Speech</button>
+        <button class="ai-close-btn" id="closeAiChatBtn">&times;</button>
+      </div>
     </div>
 
     <div class="ai-chat-messages" id="aiChatMessages">
@@ -706,125 +743,6 @@
         </div>
         <button type="submit" class="btn btn-primary full">Post Review</button>
       </form>
-    </div>
-  </div>
-
-  <!-- ── 📊 SYSTEM STATUS HUD TERMINAL ── -->
-  <div class="system-hud-bar" id="systemHudBar">
-    <div class="hud-item"><span class="hud-pulse"></span> SYSTEM: <span id="hudSystemStatus">OS_2070_ACTIVE</span></div>
-    <div class="hud-item">GATEWAY: <span id="hudGateway">NEURAL_SYNC_100</span></div>
-    <div class="hud-item">THEME: <span id="hudThemeLabel">PROCEDURAL</span></div>
-    <button class="hud-btn" id="hudControlCenterTrigger" title="Open OS 2070 Control Center">🎛️ SYSTEM_CC</button>
-    <button class="hud-btn" id="hudCmdPaletteTrigger" title="Open Command Palette (Ctrl+K)">⚡ COM_PALETTE [Ctrl+K]</button>
-  </div>
-
-  <!-- ── 🎛️ OS 2070 DIAGNOSTICS & CONTROL CENTER DRAWER ── -->
-  <div class="cc-drawer" id="controlCenterDrawer" aria-hidden="true" role="dialog">
-    <div class="cc-drawer-header">
-      <div class="cc-drawer-title">
-        <span class="system-pulse-dot"></span>
-        <h3>SYSTEM_CONTROL_CENTER</h3>
-      </div>
-      <button class="cc-drawer-close" id="closeControlCenterBtn">&times;</button>
-    </div>
-    <div class="cc-drawer-body">
-      <!-- Diagnostics Panel -->
-      <div class="cc-panel-section">
-        <h4 class="cc-section-label">⚡ SYSTEM_DIAGNOSTICS</h4>
-        <div class="cc-metric">
-          <div class="cc-metric-info">
-            <span>NEURAL_NET_CPU</span>
-            <span id="ccCpuValue">31%</span>
-          </div>
-          <div class="cc-metric-bar"><div class="cc-metric-fill" id="ccCpuBar" style="width: 31%;"></div></div>
-        </div>
-        <div class="cc-metric">
-          <div class="cc-metric-info">
-            <span>HEAP_MEM_ALLOC</span>
-            <span id="ccMemValue">18.4 MB</span>
-          </div>
-          <div class="cc-metric-bar"><div class="cc-metric-fill" id="ccMemBar" style="width: 42%;"></div></div>
-        </div>
-        <div class="cc-metric">
-          <div class="cc-metric-info">
-            <span>GATEWAY_PING</span>
-            <span id="ccPingValue">14ms</span>
-          </div>
-          <div class="cc-metric-bar"><div class="cc-metric-fill" id="ccPingBar" style="width: 15%;"></div></div>
-        </div>
-      </div>
-
-      <!-- Settings Panel -->
-      <div class="cc-panel-section">
-        <h4 class="cc-section-label">⚙️ OS_CALIBRATION</h4>
-        
-        <div class="cc-control-row">
-          <span>Low-Motion Mode</span>
-          <label class="cc-switch">
-            <input type="checkbox" id="ccLowMotionSwitch" />
-            <span class="cc-switch-slider"></span>
-          </label>
-        </div>
-
-        <div class="cc-control-row">
-          <span>Audio Diagnostics</span>
-          <label class="cc-switch">
-            <input type="checkbox" id="ccAudioSwitch" checked />
-            <span class="cc-switch-slider"></span>
-          </label>
-        </div>
-
-        <div class="cc-control-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-          <div style="display: flex; justify-content: space-between; width: 100%;">
-            <span>Master Volume</span>
-            <span id="ccVolumeValue">50%</span>
-          </div>
-          <input type="range" id="ccVolumeSlider" min="0" max="100" value="50" style="width: 100%; accent-color: var(--gold-primary);" />
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="cc-panel-section">
-        <h4 class="cc-section-label">⚡ QUICK_ACTIONS</h4>
-        <button class="btn btn-gold-outline sm full" id="ccCmdPaletteBtn" style="margin-bottom: 0.5rem; justify-content: center;">⌨️ Command Palette [Ctrl+K]</button>
-        <button class="btn btn-outline sm full" id="ccDiagnosticsBtn" style="justify-content: center;">🔌 Force Neural Diagnosis</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ⌨️ FLOATING COMMAND PALETTE ── -->
-  <div id="commandPalette" class="palette-overlay" aria-hidden="true" role="dialog">
-    <div class="palette-card">
-      <div class="palette-header">
-        <svg class="palette-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="paletteInput" placeholder="Enter command or search (e.g. '> Ask AI', '> Theme', 'Medical Billing')..." autocomplete="off" />
-        <span class="palette-esc-badge">ESC</span>
-      </div>
-      <div class="palette-results" id="paletteResults">
-        <!-- Results rendered dynamically via JS -->
-      </div>
-      <div class="palette-footer">
-        <span>Use <kbd>↑</kbd> <kbd>↓</kbd> to navigate, <kbd>Enter</kbd> to select</span>
-        <span>Ctrl+K to toggle</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── 🚀 FUTURISTIC SYSTEM BOOT SEQUENCE LOADER ── -->
-  <div id="aiBootSequence" class="boot-overlay">
-    <div class="boot-terminal">
-      <div class="boot-header">
-        <div class="boot-dots">
-          <span class="boot-dot red"></span>
-          <span class="boot-dot yellow"></span>
-          <span class="boot-dot green"></span>
-        </div>
-        <span>APPS_GRAVITY_CORE_v2070.4 // SYSTEM INITIALIZATION</span>
-      </div>
-      <div class="boot-logs" id="bootLogs"></div>
-      <div class="boot-progress-bar">
-        <div class="boot-progress-fill" id="bootProgressFill"></div>
-      </div>
     </div>
   </div>
 

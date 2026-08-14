@@ -18,7 +18,7 @@ window.toggleAiChatWindow = function(show) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // ── 🚀 2070 AI OPERATING SYSTEM PREMIUM INITIALIZATION ──
+  // ── 🚀 QUANTUM AI OPERATING SYSTEM PREMIUM INITIALIZATION ──
 
   // 1. Procedural Theme Calibrator & Time-of-Day Adaptation
   const hour = new Date().getHours();
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.body.prepend(auroraMesh);
 
-  // 2. Returning Visitor Signature Engine
+  // 2. Returning Visitor Greeting
   let visits = parseInt(localStorage.getItem('apps_gravity_visits') || '0');
   visits++;
   localStorage.setItem('apps_gravity_visits', visits);
@@ -62,237 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
     aiChatMessages.innerHTML = `
       <div class="chat-msg bot">
         <div class="msg-bubble">
-          🟢 <strong>NEURAL SYNC SECURE</strong><br>
-          Welcome back, User [ID: AG-2070-${Math.floor(Math.random() * 8999) + 1000}]. Neural link established on visit #${visits}. I am <strong>GravityBot AI</strong>. How can I assist you with App/Web development, free video courses, or project quotes today?
+          👋 <strong>Welcome back!</strong><br>
+          Glad to see you again! I am <strong>GravityBot AI</strong>. How can I assist you with App/Web development, free video courses, or project quotes today?
         </div>
       </div>
     `;
   }
-
-  // 3. Cinematic Boot Sequence Loader Screen
-  const bootOverlay = document.getElementById('aiBootSequence');
-  const bootLogsContainer = document.getElementById('bootLogs');
-  const bootProgressFill = document.getElementById('bootProgressFill');
-
-  const bootLogs = [
-    { text: "⚡ INITIALIZING APPS_GRAVITY_OS CORE...", isSuccess: true },
-    { text: "🛰️ LINKED TO HASSAN CORE GATEWAY SERVER", isSuccess: true },
-    { text: "🧬 NEURAL RECEPTORS CALIBRATING TO v2070.4...", isSuccess: true },
-    { text: isReturning ? `🟢 VISITOR RE-AUTHENTICATED // SECURE VISIT #${visits}` : "🟢 DETECTING VISITOR SIGNATURE... NEW NODE DETECTED", isSuccess: !isReturning },
-    { text: "🗄️ PARSING EMBEDDED KNOWLEDGE BASE [150+ TOPICS]...", isSuccess: true },
-    { text: `🎨 CHROME SPECTRUM SYNCED: ${timeOfDayTheme.toUpperCase()}`, isSuccess: true },
-    { text: "🔒 ENCRYPTING CLIENT ROUTE HANDLERS [CSRF OK]...", isSuccess: true },
-    { text: "✨ ALL QUANTUM SYSTEMS ONLINE. BOOT COMPLETED.", isSuccess: true }
-  ];
-
-  if (bootOverlay && bootLogsContainer && bootProgressFill) {
-    // If returning visitor, speed up boot sequence significantly (10x faster) to maintain speed
-    const stepDelay = isReturning ? 60 : 350;
-    let logIndex = 0;
-
-    function runBootStep() {
-      if (logIndex < bootLogs.length) {
-        const log = bootLogs[logIndex];
-        const line = document.createElement('div');
-        line.className = `boot-log-line ${log.isSuccess ? 'success' : 'warn'}`;
-        line.innerHTML = `<span>[${new Date().toLocaleTimeString().split(' ')[0]}]</span> <span>${log.text}</span>`;
-        bootLogsContainer.appendChild(line);
-        bootLogsContainer.scrollTop = bootLogsContainer.scrollHeight;
-
-        // Progress percentage
-        const progress = Math.round(((logIndex + 1) / bootLogs.length) * 100);
-        bootProgressFill.style.width = `${progress}%`;
-
-        logIndex++;
-        setTimeout(runBootStep, stepDelay);
-      } else {
-        // Complete, fade out overlay
-        setTimeout(() => {
-          bootOverlay.style.opacity = '0';
-          setTimeout(() => {
-            bootOverlay.style.display = 'none';
-          }, 800);
-        }, isReturning ? 150 : 500);
-      }
-    }
-    setTimeout(runBootStep, 100);
-  }
-
-  // Update Status HUD labels
-  const hudThemeLabel = document.getElementById('hudThemeLabel');
-  if (hudThemeLabel) hudThemeLabel.innerText = timeOfDayTheme.toUpperCase();
-
-  // 4. Command Palette Logic
-  const commandPalette = document.getElementById('commandPalette');
-  const paletteInput = document.getElementById('paletteInput');
-  const paletteResults = document.getElementById('paletteResults');
-  const hudCmdPaletteTrigger = document.getElementById('hudCmdPaletteTrigger');
-
-  const commands = [
-    { label: "💬 Ask GravityBot AI Assistant", action: () => window.toggleAiChatWindow(true), icon: "🤖" },
-    { label: "💰 Calculate Instant Project Quote", action: () => document.getElementById('estimator')?.scrollIntoView({ behavior: 'smooth' }), icon: "🧮" },
-    { label: "📚 Explore Free Video Courses", action: () => document.getElementById('courses')?.scrollIntoView({ behavior: 'smooth' }), icon: "🎓" },
-    { label: "🎨 Toggle OS Visual Theme", action: () => document.getElementById('themeToggleBtn')?.click(), icon: "🔮" },
-    { label: "⚙️ Run Neural Network Diagnostics", action: () => runDiagnostics(), icon: "🔌" },
-    { label: "🌀 Toggle Performance Low-Motion Mode", action: () => toggleLowMotion(), icon: "🚀" },
-    { label: "⭐ Post Client Review or Feedback", action: () => document.getElementById('openReviewModalBtn')?.click(), icon: "📝" },
-    { label: "✉️ Send Message to Hassan Directly", action: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), icon: "📬" },
-    { label: "📱 Preview Featured Pak Advisory App", action: () => document.getElementById('openPakModalBtn')?.click(), icon: "📱" },
-    { label: "⬆️ Scroll to Top of System Screen", action: () => window.scrollTo({ top: 0, behavior: 'smooth' }), icon: "⬆️" }
-  ];
-
-  let selectedPaletteIndex = 0;
-
-  function toggleCommandPalette(forceState) {
-    if (!commandPalette) return;
-    const isShowing = commandPalette.classList.contains('active');
-    const nextState = forceState !== undefined ? forceState : !isShowing;
-
-    if (nextState) {
-      commandPalette.classList.add('active');
-      commandPalette.setAttribute('aria-hidden', 'false');
-      if (paletteInput) {
-        paletteInput.value = '';
-        paletteInput.focus();
-      }
-      renderPaletteResults('');
-    } else {
-      commandPalette.classList.remove('active');
-      commandPalette.setAttribute('aria-hidden', 'true');
-    }
-  }
-
-  function renderPaletteResults(query) {
-    if (!paletteResults) return;
-    paletteResults.innerHTML = '';
-    const cleanQuery = query.toLowerCase().trim();
-
-    const filtered = commands.filter(cmd => 
-      cmd.label.toLowerCase().includes(cleanQuery)
-    );
-
-    if (filtered.length === 0) {
-      paletteResults.innerHTML = `<div style="color: var(--text-muted); padding: 1.5rem; text-align: center;">No compatible neural commands found. Try 'Ask AI' or 'Theme'.</div>`;
-      return;
-    }
-
-    selectedPaletteIndex = Math.min(selectedPaletteIndex, filtered.length - 1);
-
-    filtered.forEach((cmd, idx) => {
-      const item = document.createElement('div');
-      item.className = `palette-item ${idx === selectedPaletteIndex ? 'selected' : ''}`;
-      item.innerHTML = `
-        <div class="palette-item-left">
-          <span class="palette-item-icon">${cmd.icon}</span>
-          <span>${cmd.label}</span>
-        </div>
-        <span class="palette-item-action">EXECUTE</span>
-      `;
-      item.addEventListener('click', () => {
-        cmd.action();
-        toggleCommandPalette(false);
-      });
-      paletteResults.appendChild(item);
-    });
-  }
-
-  // Keyboard shortcut Ctrl+K / Cmd+K listener
-  window.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      toggleCommandPalette();
-    }
-    if (e.key === 'Escape' && commandPalette && commandPalette.classList.contains('active')) {
-      toggleCommandPalette(false);
-    }
-  });
-
-  if (hudCmdPaletteTrigger) {
-    hudCmdPaletteTrigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleCommandPalette(true);
-    });
-  }
-
-  if (paletteInput) {
-    paletteInput.addEventListener('input', (e) => {
-      selectedPaletteIndex = 0;
-      renderPaletteResults(e.target.value);
-    });
-
-    paletteInput.addEventListener('keydown', (e) => {
-      const activeItems = paletteResults.querySelectorAll('.palette-item');
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        selectedPaletteIndex = (selectedPaletteIndex + 1) % activeItems.length;
-        renderPaletteResults(paletteInput.value);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        selectedPaletteIndex = (selectedPaletteIndex - 1 + activeItems.length) % activeItems.length;
-        renderPaletteResults(paletteInput.value);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        const activeItem = activeItems[selectedPaletteIndex];
-        if (activeItem) activeItem.click();
-      }
-    });
-  }
-
-  // Interactive OS Diagnostics trigger
-  function runDiagnostics() {
-    toggleCommandPalette(false);
-    window.toggleAiChatWindow(true);
-    const msgs = document.getElementById('aiChatMessages');
-    if (!msgs) return;
-
-    // Output cool diagnosis log
-    const line = document.createElement('div');
-    line.className = 'chat-msg bot';
-    line.innerHTML = `
-      <div class="msg-bubble" style="font-family: monospace; border: 1px solid var(--gold-primary); background: rgba(0,0,0,0.4); line-height: 1.5;">
-        <span style="color: var(--gold-primary); font-weight: bold;">⚡ SYSTEM RUNTIME DIAGNOSTICS [OK]</span><br>
-        ------------------------------------<br>
-        • OPERATING SYSTEM: v2070.4.AI<br>
-        • KNOWLEDGE LINK: 100% ONLINE<br>
-        • ANOMALIES DETECTED: 0.00%<br>
-        • CORE CODES: FULLY HARDENED<br>
-        • RENDER PIPELINE: GPU COMPATIBLE<br>
-        • CURRENT THEME: ${timeOfDayTheme.toUpperCase()}<br>
-        ------------------------------------<br>
-        STATUS: apps-gravity core is operating at maximum capacity. Ready for new projects.
-      </div>
-    `;
-    msgs.appendChild(line);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
-
-  // Toggle Low-Motion Mode
-  function toggleLowMotion() {
-    document.body.classList.toggle('low-motion-active');
-    const isActive = document.body.classList.contains('low-motion-active');
-    showNotification(isActive ? "Low-Motion Mode Enabled" : "High-Performance Visuals Restored");
-  }
-
-  function showNotification(msg) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'admin-toast show';
-    alertDiv.style.background = 'var(--gold-primary)';
-    alertDiv.style.color = '#000';
-    alertDiv.style.zIndex = '99999';
-    alertDiv.innerText = `💡 ${msg}`;
-    document.body.appendChild(alertDiv);
-    setTimeout(() => {
-      alertDiv.style.opacity = '0';
-      setTimeout(() => alertDiv.remove(), 400);
-    }, 2500);
-  }
-
-  // Close palette on outer click
-  window.addEventListener('click', (e) => {
-    if (commandPalette && e.target === commandPalette) {
-      toggleCommandPalette(false);
-    }
-  });
 
   // 5. Magnetic CTA Button Physics
   const magneticCTAs = document.querySelectorAll('.btn-primary, .btn-outline, .btn-gold-outline, .nav-theme-btn');
@@ -566,6 +341,64 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', animateSkills);
   animateSkills();
 
+  // ── 🎯 INTERACTIVE SKILL & PROJECT QUIZ LOGIC ──
+  const quizBtns = document.querySelectorAll('.quiz-opt-btn');
+  const quizResultPanel = document.getElementById('quizResultPanel');
+  const quizResultContent = document.getElementById('quizResultContent');
+
+  const QUIZ_RESULTS = {
+    app: {
+      title: "📱 Recommended: Mobile App Development Package",
+      badge: "Match: 98%",
+      desc: "Based on your goal, Hassan's cross-platform (iOS & Android) mobile app development service is perfect. Get real-time synchronization, cloud APIs, and sleek mobile UX.",
+      actionText: "🧮 Calculate App Estimate",
+      actionLink: "#estimator"
+    },
+    web: {
+      title: "🌐 Recommended: High-Performance Web Application",
+      badge: "Match: 99%",
+      desc: "For modern web platforms, we build high-speed web apps with Express backend APIs, custom glassmorphism designs, and bulletproof security headers.",
+      actionText: "💬 Calculate Web Quote",
+      actionLink: "#estimator"
+    },
+    medical: {
+      title: "🎓 Recommended: Medical Billing Video Course (Google Drive)",
+      badge: "Match: 100% FREE",
+      desc: "Stream and download all video modules covering ICD-10/CPT coding, claim submissions, and revenue cycle management directly on Google Drive with zero cost.",
+      actionText: "▶ Access Free Drive Folder",
+      actionLink: "https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link",
+      external: true
+    },
+    analytics: {
+      title: "📊 Recommended: Data Analytics & BI 178 Video Course",
+      badge: "Match: 100% FREE",
+      desc: "Access 178 video lessons complete with downloadable course files and interactive lesson lists to master business intelligence.",
+      actionText: "▶ Start Analytics Course",
+      actionLink: "data-analytics-course.html"
+    }
+  };
+
+  quizBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const goal = btn.getAttribute('data-goal');
+      const result = QUIZ_RESULTS[goal];
+      if (!result || !quizResultPanel || !quizResultContent) return;
+
+      quizResultContent.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+          <h4 style="font-family: var(--font-heading); color: var(--gold-primary); font-size: 1.15rem; margin: 0;">${result.title}</h4>
+          <span style="background: rgba(201,168,76,0.15); border: 1px solid var(--gold-primary); color: var(--gold-primary); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-family: var(--font-heading);">${result.badge}</span>
+        </div>
+        <p style="color: var(--text-main); font-family: var(--font-sub); line-height: 1.6; margin-bottom: 1.2rem;">${result.desc}</p>
+        <a href="${result.actionLink}" ${result.external ? 'target="_blank" rel="noopener noreferrer"' : ''} class="btn btn-primary" style="display: inline-flex; align-items: center; text-decoration: none;">
+          ${result.actionText}
+        </a>
+      `;
+      quizResultPanel.style.display = 'block';
+      quizResultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  });
+
   // ── 🤖 AI CHATBOT ENGINE LOGIC ──
   const aiWidgetTrigger = document.getElementById('aiWidgetTrigger');
   const aiChatWindow = document.getElementById('aiChatWindow');
@@ -596,6 +429,32 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentTypingTimer = null;
   let activeTypingResolve = null;
 
+  let aiVoiceEnabled = false;
+  const aiVoiceToggleBtn = document.getElementById('aiVoiceToggleBtn');
+  if (aiVoiceToggleBtn) {
+    aiVoiceToggleBtn.addEventListener('click', () => {
+      aiVoiceEnabled = !aiVoiceEnabled;
+      aiVoiceToggleBtn.classList.toggle('active', aiVoiceEnabled);
+      aiVoiceToggleBtn.innerHTML = aiVoiceEnabled ? "🔊 Voice: ON" : "🔇 Speech";
+      if (!aiVoiceEnabled && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    });
+  }
+
+  function speakText(plainText) {
+    if (!aiVoiceEnabled || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const cleanText = String(plainText || '')
+      .replace(/[\*\#\_\[\]\(\)]/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/<[^>]*>/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText.slice(0, 350));
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    window.speechSynthesis.speak(utterance);
+  }
+
   const aiQuickPromptsContainer = document.querySelector('.ai-quick-prompts');
 
   function renderChatSuggestions(suggestionsArray) {
@@ -616,6 +475,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function appendChatMessage(sender, text, suggestions) {
     if (activeTypingResolve) {
       activeTypingResolve();
+    }
+
+    if (sender === 'bot') {
+      speakText(text);
     }
 
     const msgDiv = document.createElement('div');
@@ -650,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Typewriter print effect for premium 2070 feel
+    // Typewriter print effect for premium quantum feel
     let isSkipped = false;
     const skipHandler = () => { isSkipped = true; };
     aiChatMessages.addEventListener('click', skipHandler);
@@ -979,7 +842,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCourses();
   loadCoursesFromAPI();
 
-  // ── 🎨 DYNAMIC AI THEME SWITCHER ENGINE (INTEGRATED WITH 2070 OS) ──
+  // ── 🎨 DYNAMIC AI THEME SWITCHER ENGINE (INTEGRATED WITH QUANTUM OS) ──
   const themes = [
     { id: 'gold', name: 'Gold Obsidian' },
     { id: 'cyan', name: 'Cyber Cyan' },
