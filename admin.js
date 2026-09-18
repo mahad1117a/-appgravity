@@ -19,6 +19,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (opts.value !== undefined) node.value = opts.value;
     if (opts.name) node.name = opts.name;
     if (opts.required) node.required = true;
+    if (opts.href) node.href = opts.href;
+    if (opts.target) node.target = opts.target;
+    if (opts.rel) node.rel = opts.rel;
+    if (opts.download) node.download = opts.download;
     return node;
   }
 
@@ -595,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
       top.appendChild(el('div', { className: 'admin-card-meta', text: formatDate(f.uploadedAt) }));
       card.appendChild(top);
       card.appendChild(el('div', { className: 'admin-card-body', text: `${f.mimeType} · ${Math.round(f.size / 1024)} KB` }));
-      const link = el('a', { className: 'admin-action-btn', text: 'Open file', href: f.url });
+      const link = el('a', { className: 'admin-action-btn', text: 'Open file', href: f.url, target: '_blank', rel: 'noopener noreferrer' });
       link.style.display = 'inline-block';
       link.style.marginTop = '0.5rem';
       card.appendChild(link);

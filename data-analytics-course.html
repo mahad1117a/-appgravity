@@ -66,6 +66,26 @@
                 </div>
               </div>
               <div class="course-now-playing" id="courseNowPlaying"><span>Select a lesson to begin</span></div>
+              <div class="course-controls-bar">
+                <button class="btn btn-outline sm" id="prevLessonBtn" title="Previous Lesson">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                  <span>Prev</span>
+                </button>
+                <button class="btn btn-primary sm" id="toggleCompleteLessonBtn">
+                  <span id="completeBtnText">Mark as Completed</span>
+                </button>
+                <button class="btn btn-outline sm" id="nextLessonBtn" title="Next Lesson">
+                  <span>Next</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+              <div style="padding: 0.8rem 1.2rem; background: rgba(0,0,0,0.3); border-top: 1px solid var(--border-color);">
+                <div class="course-progress-header">
+                  <span>Course Completion Tracker</span>
+                  <strong id="courseProgressText">0 of 15 completed (0%)</strong>
+                </div>
+                <div class="cc-progress-bar" style="margin: 0;"><div class="cc-progress-fill" id="courseProgressFill" style="width: 0%; background: #10b981;"></div></div>
+              </div>
             </div>
             <p class="course-ad-note">
               ℹ️ Videos are embedded in privacy-enhanced mode. In-player ads are served directly by YouTube and can't be removed by this site — an ad blocker on your device is the only way to skip those.

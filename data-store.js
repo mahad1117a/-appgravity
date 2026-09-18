@@ -28,6 +28,39 @@ const DEFAULT_COURSES = [
     pageUrl: 'data-analytics-course.html',
     youtubeUrl: '',
     features: ['📹 178 Video Lessons', '📂 Downloadable Course Files', '🔎 Searchable Lesson List', '💡 100% Free Access']
+  },
+  {
+    id: 'web-dev-bootcamp',
+    title: 'Full-Stack Web Development Bootcamp',
+    category: 'programming',
+    badge: '🚀 Full Stack Masterclass',
+    meta: 'HTML, CSS, JavaScript, Node.js & Express',
+    desc: 'Master modern web development from foundational HTML5/CSS3 glassmorphic design to building secure REST APIs and database-backed web platforms.',
+    driveUrl: 'https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link',
+    youtubeUrl: '',
+    features: ['🌐 Modern Web Stack', '⚡ Vanilla JS & Node.js', '🔒 API Security Headers', '💡 100% Free Access']
+  },
+  {
+    id: 'flutter-mobile-mastery',
+    title: 'Flutter & Dart Mobile App Development',
+    category: 'mobile',
+    badge: '📱 iOS & Android Masterclass',
+    meta: 'Native UI • State Management • Cloud APIs',
+    desc: 'Comprehensive mobile app engineering curriculum based on our flagship Pak Advisory App architecture. Build cross-platform iOS and Android apps with beautiful responsive UI.',
+    driveUrl: 'https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link',
+    youtubeUrl: '',
+    features: ['📱 Cross-Platform Architecture', '⚡ Fast Animations & UI', '☁️ Cloud API Integration', '💡 100% Free Access']
+  },
+  {
+    id: 'python-automation',
+    title: 'Python Automation & Real-World Scripting',
+    category: 'programming',
+    badge: '🐍 Python Developer Pack',
+    meta: 'Automation • Data Parsing • Web Scraping',
+    desc: 'Practical Python course designed to automate everyday workflows, extract web data, process spreadsheet files, and deploy automated background task engines.',
+    driveUrl: 'https://drive.google.com/drive/folders/1sA2HPCr4jU8fH8aNAdogDor22VKgA96I?usp=drive_link',
+    youtubeUrl: '',
+    features: ['🐍 Python Automation Core', '📊 CSV/Excel Data Wrangling', '🤖 Script Task Scheduling', '💡 100% Free Access']
   }
 ];
 
