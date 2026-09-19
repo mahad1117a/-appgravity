@@ -11,8 +11,28 @@
   <link rel="icon" type="image/jpg" href="logo.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=2.3" />
+  <style>
+    /* Critical layout constraints: prevent drawer or modals from showing in body flow */
+    .control-center-drawer {
+      position: fixed !important;
+      top: 0;
+      right: -450px !important;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .control-center-drawer.active {
+      right: 0 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+    }
+    .scroll-top-btn {
+      position: fixed !important;
+      bottom: 2rem;
+      right: 2rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -20,8 +40,9 @@
   <div class="cursor-glow" id="cursorGlow"></div>
   <div class="cursor-dot" id="cursorDot"></div>
 
-  <!-- ── PARTICLES ── -->
+  <!-- ── PARTICLES & MATRIX CODE RAIN ── -->
   <canvas id="particleCanvas"></canvas>
+  <canvas id="matrixCanvas" class="matrix-canvas"></canvas>
 
   <!-- ── NAV ── -->
   <nav class="navbar" id="navbar">
@@ -829,6 +850,9 @@
     <button class="hud-btn" id="hudControlCenterTrigger" title="Open OS Control Center">
       🎛️ Control Center
     </button>
+    <button class="hud-btn" id="hudHackerTrigger" title="Launch Cyber Hacker Terminal">
+      💻 Terminal
+    </button>
     <button class="hud-btn" id="hudCmdPaletteTrigger" title="Quick Command Palette (Ctrl+K)">
       ⌘K Search
     </button>
@@ -910,6 +934,7 @@
           <button class="cc-theme-btn" data-theme-id="2"><span>🔮</span> Cosmic Violet</button>
           <button class="cc-theme-btn" data-theme-id="3"><span>🌿</span> Emerald</button>
           <button class="cc-theme-btn" data-theme-id="4"><span>🔥</span> Ruby Amber</button>
+          <button class="cc-theme-btn" data-theme-id="5"><span>💻</span> Cyber Hacker</button>
         </div>
       </div>
 
@@ -959,6 +984,32 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- ── 💻 HOLLYWOOD CYBER HACKER TERMINAL MODAL ── -->
+  <div class="hacker-terminal-modal" id="hackerTerminalModal" role="dialog" aria-label="Cyber Hacker Terminal">
+    <div class="hacker-terminal-card">
+      <div class="hacker-terminal-header">
+        <div class="hacker-terminal-title">
+          <span>🟢</span>
+          <span>APPS GRAVITY // CYBER TERMINAL v4.2 [ROOT ACCESS]</span>
+        </div>
+        <button class="cc-close-btn" id="closeHackerTerminalBtn" aria-label="Close Terminal">&times;</button>
+      </div>
+      <div class="hacker-terminal-body" id="hackerTerminalBody">
+        <div class="terminal-line green">===============================================================</div>
+        <div class="terminal-line green">APPS GRAVITY QUANTUM MAINFRAME // SECURE WORKSTATION TERMINAL</div>
+        <div class="terminal-line green">===============================================================</div>
+        <div class="terminal-line white">System Status: OPERATIONAL | Encryption: QUANTUM-SHA512 | Defense: ACTIVE</div>
+        <div class="terminal-line yellow">Type "help" to view available terminal commands, or try "scan", "decrypt", "matrix".</div>
+        <div class="terminal-line">---------------------------------------------------------------</div>
+      </div>
+      <form class="hacker-terminal-input-row" id="hackerTerminalForm">
+        <span class="terminal-prompt-label">root@gravity:~$</span>
+        <input type="text" class="hacker-terminal-input" id="hackerTerminalInput" placeholder="type a command (e.g. scan, decrypt, help)..." autocomplete="off" />
+        <button type="submit" class="hud-btn" style="padding: 0.3rem 0.7rem;">EXEC</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js?v=2.3"></script>
 </body>
 </html>

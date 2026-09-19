@@ -950,7 +950,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: 'cyan', name: 'Cyber Cyan' },
     { id: 'violet', name: 'Cosmic Violet' },
     { id: 'emerald', name: 'Emerald Matrix' },
-    { id: 'ruby', name: 'Ruby Amber' }
+    { id: 'ruby', name: 'Ruby Amber' },
+    { id: 'hacker', name: 'Cyber Hacker (Matrix Movie)' }
   ];
 
   function applyTheme(index) {
@@ -962,6 +963,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Synchronize with bottom HUD system status label
     const hudThemeLabelEl = document.getElementById('hudThemeLabel');
     if (hudThemeLabelEl) hudThemeLabelEl.innerText = theme.name.toUpperCase();
+
+    // Toggle Matrix Code Rain when in Cyber Hacker mode
+    if (theme.id === 'hacker') {
+      if (window.matrixRain) window.matrixRain.start();
+    } else {
+      if (window.matrixRain) window.matrixRain.stop();
+    }
   }
 
   // Use the computed currentThemeIndex from our time-of-day OS initialization above
@@ -1662,7 +1670,9 @@ document.addEventListener('DOMContentLoaded', () => {
     { icon: '⭐', title: 'Client Reviews', desc: 'Community testimonials & feedback', cat: 'Community', action: () => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' }) },
     { icon: '📬', title: 'Contact Hassan', desc: 'Send direct email / project inquiry', cat: 'Navigation', action: () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }) },
     { icon: '🤖', title: 'GravityBot AI Assistant', desc: 'Launch interactive conversational AI', cat: 'AI', action: () => window.toggleAiChatWindow(true) },
-    { icon: '🎨', title: 'Switch Visual Atmosphere', desc: 'Cycle themes (Gold, Cyan, Violet, Emerald, Ruby)', cat: 'Atmosphere', action: () => { currentThemeIndex = (currentThemeIndex + 1) % themes.length; applyTheme(currentThemeIndex); showNotification(`Theme switched to ${themes[currentThemeIndex].name}`); } },
+    { icon: '🎨', title: 'Switch Visual Atmosphere', desc: 'Cycle themes (Gold, Cyan, Violet, Emerald, Ruby, Cyber Hacker)', cat: 'Atmosphere', action: () => { currentThemeIndex = (currentThemeIndex + 1) % themes.length; applyTheme(currentThemeIndex); showNotification(`Theme switched to ${themes[currentThemeIndex].name}`); } },
+    { icon: '💻', title: 'Cyber Hacker Movie Mode', desc: 'Transform into Hollywood Matrix hacking platform', cat: 'Atmosphere', action: () => { currentThemeIndex = 5; applyTheme(5); showNotification('[ACCESS GRANTED] Cyber Hacker Platform Activated', 'success'); } },
+    { icon: '⌨️', title: 'Cyber Terminal Console', desc: 'Launch Hollywood interactive hacker shell & scan tools', cat: 'Tools', action: () => window.toggleHackerTerminal(true) },
     { icon: '🩺', title: 'Run Platform Diagnostics', desc: 'Run real-time API, security, and browser tests', cat: 'Tools', action: () => window.runDiagnostics() },
     { icon: '🎓', title: 'Request a Free Course', desc: 'Ask Hassan to publish a specific tutorial', cat: 'Learning', action: () => toggleModal(document.getElementById('courseReqModal'), true) },
     { icon: '✍️', title: 'Submit Client Review', desc: 'Share your experience with Apps Gravity', cat: 'Community', action: () => toggleModal(document.getElementById('reviewModal'), true) },
@@ -1920,5 +1930,234 @@ document.addEventListener('DOMContentLoaded', () => {
       if (ccPingBar) ccPingBar.style.width = `${Math.round((ping / 50) * 100)}%`;
     }
   }, 1200);
+
+  // ── 💻 HOLLYWOOD CYBER MATRIX DIGITAL RAIN ENGINE ──
+  class MatrixRainEffect {
+    constructor(canvasId) {
+      this.canvas = document.getElementById(canvasId);
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d');
+      this.chars = '0123456789ABCDEFｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ#$*+<>~'.split('');
+      this.fontSize = 15;
+      this.columns = 0;
+      this.drops = [];
+      this.running = false;
+      this.animId = null;
+      this.resize();
+      window.addEventListener('resize', () => this.resize());
+    }
+    resize() {
+      if (!this.canvas) return;
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.columns = Math.floor(this.canvas.width / this.fontSize);
+      this.drops = [];
+      for (let i = 0; i < this.columns; i++) {
+        this.drops[i] = Math.floor(Math.random() * -60);
+      }
+    }
+    start() {
+      if (this.running) return;
+      this.running = true;
+      this.resize();
+      this.tick();
+    }
+    stop() {
+      this.running = false;
+      if (this.animId) cancelAnimationFrame(this.animId);
+      if (this.ctx && this.canvas) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+    }
+    tick() {
+      if (!this.running) return;
+      this.ctx.fillStyle = 'rgba(2, 7, 4, 0.08)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.font = `${this.fontSize}px monospace`;
+
+      for (let i = 0; i < this.drops.length; i++) {
+        const char = this.chars[Math.floor(Math.random() * this.chars.length)];
+        const x = i * this.fontSize;
+        const y = this.drops[i] * this.fontSize;
+
+        // Glowing white-green head, green stream
+        this.ctx.fillStyle = '#c7ffd5';
+        this.ctx.fillText(char, x, y);
+        this.ctx.fillStyle = '#00ff66';
+        this.ctx.fillText(char, x, y - this.fontSize);
+
+        if (y > this.canvas.height && Math.random() > 0.975) {
+          this.drops[i] = 0;
+        }
+        this.drops[i]++;
+      }
+      this.animId = requestAnimationFrame(() => this.tick());
+    }
+  }
+
+  window.matrixRain = new MatrixRainEffect('matrixCanvas');
+
+  // ── ⌨️ HOLLYWOOD CYBER HACKER TERMINAL LOGIC ──
+  const hackerTerminalModal = document.getElementById('hackerTerminalModal');
+  const closeHackerTerminalBtn = document.getElementById('closeHackerTerminalBtn');
+  const hudHackerTrigger = document.getElementById('hudHackerTrigger');
+  const hackerTerminalForm = document.getElementById('hackerTerminalForm');
+  const hackerTerminalInput = document.getElementById('hackerTerminalInput');
+  const hackerTerminalBody = document.getElementById('hackerTerminalBody');
+
+  function logTerminal(text, className = '') {
+    if (!hackerTerminalBody) return;
+    const line = document.createElement('div');
+    line.className = 'terminal-line ' + className;
+    line.textContent = text;
+    hackerTerminalBody.appendChild(line);
+    hackerTerminalBody.scrollTop = hackerTerminalBody.scrollHeight;
+  }
+
+  window.toggleHackerTerminal = function(show) {
+    if (!hackerTerminalModal) return;
+    const isShowing = hackerTerminalModal.classList.contains('active');
+    const targetState = show !== undefined ? show : !isShowing;
+
+    if (targetState) {
+      hackerTerminalModal.classList.add('active');
+      if (hackerTerminalInput) {
+        hackerTerminalInput.value = '';
+        setTimeout(() => hackerTerminalInput.focus(), 60);
+      }
+      cyberSynth.playSelect();
+    } else {
+      hackerTerminalModal.classList.remove('active');
+    }
+  };
+
+  if (hudHackerTrigger) {
+    hudHackerTrigger.addEventListener('click', () => window.toggleHackerTerminal(true));
+  }
+  if (closeHackerTerminalBtn) {
+    closeHackerTerminalBtn.addEventListener('click', () => window.toggleHackerTerminal(false));
+  }
+  if (hackerTerminalModal) {
+    hackerTerminalModal.addEventListener('click', (e) => {
+      if (e.target === hackerTerminalModal) window.toggleHackerTerminal(false);
+    });
+  }
+
+  // Tilde key ~ or Ctrl+Shift+H to launch terminal
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '`' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      window.toggleHackerTerminal();
+    }
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'h') {
+      e.preventDefault();
+      window.toggleHackerTerminal();
+    }
+  });
+
+  if (hackerTerminalForm) {
+    hackerTerminalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const raw = (hackerTerminalInput.value || '').trim();
+      if (!raw) return;
+      logTerminal(`root@gravity:~$ ${raw}`, 'green');
+      hackerTerminalInput.value = '';
+      cyberSynth.playClick();
+
+      const parts = raw.toLowerCase().split(' ');
+      const cmd = parts[0];
+      const arg = parts.slice(1).join(' ');
+
+      switch (cmd) {
+        case 'help':
+          logTerminal('AVAILABLE COMMANDS:', 'yellow');
+          logTerminal('  scan        - Run real-time network port & security penetration scan', 'cyan');
+          logTerminal('  decrypt     - Decrypt high-security encrypted access payload', 'cyan');
+          logTerminal('  matrix      - Switch instantly to Cyber Hacker Movie Theme', 'cyan');
+          logTerminal('  theme <id>  - Switch theme (gold, cyan, violet, emerald, ruby, hacker)', 'cyan');
+          logTerminal('  whoami      - Display current identity & authorization level', 'cyan');
+          logTerminal('  status      - Display quantum mainframe system diagnostics', 'cyan');
+          logTerminal('  clear       - Wipe the terminal display screen', 'cyan');
+          logTerminal('  exit        - Close the Cyber Terminal', 'cyan');
+          break;
+
+        case 'scan':
+          logTerminal('[*] INITIATING HOLLYWOOD CYBER INTRUSION RECON SCAN...', 'yellow');
+          let step = 0;
+          const scanInterval = setInterval(() => {
+            step++;
+            if (step === 1) logTerminal('[+] Resolving nodes: 192.168.4.102 -> TLS 1.3 handshake verified', 'cyan');
+            if (step === 2) logTerminal('[+] Port 443 (HTTPS) - OPEN [Enforced Helmet HSTS Security]', 'white');
+            if (step === 3) logTerminal('[+] Port 80 (HTTP) - REDIRECTED TO SECURE PROXY', 'white');
+            if (step === 4) logTerminal('[+] Threat Log: 0 breaches detected. Rate limiters & MongoSanitize: NOMINAL', 'white');
+            if (step === 5) {
+              clearInterval(scanInterval);
+              logTerminal('[SUCCESS] Penetration scan finished. All systems impenetrable!', 'green');
+              cyberSynth.playSuccess();
+            }
+          }, 250);
+          break;
+
+        case 'decrypt':
+          logTerminal('[*] INITIALIZING QUANTUM BRUTE-FORCE DECRYPTOR...', 'yellow');
+          let decCount = 0;
+          const decInterval = setInterval(() => {
+            decCount++;
+            const randomCipher = Math.random().toString(36).substring(2, 12).toUpperCase();
+            logTerminal(`[!] ATTEMPT ${decCount}/5: HASH_${randomCipher} => COMPUTING...`, 'yellow');
+            if (decCount === 5) {
+              clearInterval(decInterval);
+              logTerminal('[DECRYPTED] >>> "APPS GRAVITY: KNOWLEDGE & SOFTWARE FOR YOUR UNIVERSE" <<<', 'green');
+              cyberSynth.playSuccess();
+            }
+          }, 300);
+          break;
+
+        case 'matrix':
+        case 'hacker':
+          currentThemeIndex = 5;
+          applyTheme(5);
+          logTerminal('[ACCESS GRANTED] Hollywood Cyber Hacker theme activated!', 'green');
+          cyberSynth.playSuccess();
+          break;
+
+        case 'theme':
+          const foundIdx = themes.findIndex(t => t.id === arg);
+          if (foundIdx !== -1) {
+            currentThemeIndex = foundIdx;
+            applyTheme(foundIdx);
+            logTerminal(`[OK] Theme changed to "${themes[foundIdx].name}"`, 'green');
+          } else {
+            logTerminal(`[ERROR] Theme "${arg}" not found. Options: ${themes.map(t => t.id).join(', ')}`, 'red');
+          }
+          break;
+
+        case 'whoami':
+          logTerminal('root@apps-gravity.internal [Founder: Hassan - Lahore, PK]', 'cyan');
+          logTerminal('Role: Lead Architect & Free Course Distributor', 'white');
+          break;
+
+        case 'status':
+          logTerminal('MAINFRAME STATUS: 100% OPERATIONAL', 'green');
+          logTerminal('CSRF Protection: ACTIVE (Double-Submit Cookie)', 'white');
+          logTerminal('Web Audio FX: ACTIVE', 'white');
+          logTerminal('Courses Gateway: 5 CURRICULUMS ACTIVE', 'white');
+          break;
+
+        case 'clear':
+          hackerTerminalBody.innerHTML = '';
+          break;
+
+        case 'exit':
+        case 'quit':
+          window.toggleHackerTerminal(false);
+          break;
+
+        default:
+          logTerminal(`Command not recognized: "${raw}". Type "help" for a list of commands.`, 'red');
+          break;
+      }
+    });
+  }
 });
 
